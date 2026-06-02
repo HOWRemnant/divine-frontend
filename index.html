@@ -1745,7 +1745,9 @@ async function payNow() {
 }
   </script>
 
-  <script>
+<script>
+
+let products = [
 
   // 🌾 STAPLES
   { id: 1, name: "Grace Callaloo", price: 3.99, cat: "food", img: "images/grace-callaloo-540g.png" },
@@ -1784,68 +1786,33 @@ async function payNow() {
   { id: 30, name: "Foska Oats", price: 2.99, cat: "food", img: "images/foska-oats.png" },
   { id: 31, name: "Grace Chicken Soup", price: 1.49, cat: "food", img: "images/grace-chicken-flavored-mix-1270x.png" },
 
-  // ⭐ PLACEHOLDERS FOR ALL OTHER IMAGES ⭐
-
-  // PERSONAL CARE / HOUSEHOLD
+  // ⭐ PLACEHOLDERS
   { id: 32, name: "Ammens Powder", price: 0.00, cat: "personal", img: "images/ammens-powder.png", out: true },
-  { id: 33, name: "Benjamins Eucalyptus Oil", price: 0.00, cat: "personal", img: "images/benjamins-eucalyptus-oil-570x.png", out: true },
-  { id: 34, name: "Benjamins Vanilla", price: 0.00, cat: "personal", img: "images/benjamins-vanilla-240ml_1000x.png", out: true },
-  { id: 35, name: "Castile Olive Oil Soap", price: 0.00, cat: "personal", img: "images/castile-olive-oil-soap-640x.png", out: true },
-  { id: 36, name: "Inhaler", price: 0.00, cat: "personal", img: "images/inhaler.png", out: true },
-
-  // PANTRY / DRY GOODS
-  { id: 37, name: "Andrews Original Salt Sachets", price: 0.00, cat: "food", img: "images/andrews-original-salt-satchets.png", out: true },
-  { id: 38, name: "Betty Condensed Milk", price: 0.00, cat: "food", img: "images/betty-condensed-milk.png", out: true },
-  { id: 39, name: "Coconut Milk Powder", price: 0.00, cat: "food", img: "images/caribbean-dream-coconut-milk-powder.png", out: true },
-  { id: 40, name: "Bissy Tea", price: 0.00, cat: "food", img: "images/caribbean-dreams-bissy-tea-24-teabag-720x.png", out: true },
-  { id: 41, name: "Cheese Krunchies", price: 0.00, cat: "food", img: "images/cheese-krunchies-1880x.png", out: true },
-  { id: 42, name: "Excelsior Cream Crackers", price: 0.00, cat: "food", img: "images/excelsior-cream-crackers.png", out: true },
-  { id: 43, name: "Gold Seal Margarine", price: 0.00, cat: "food", img: "images/gold-seal-margarine.png", out: true },
-  { id: 44, name: "Grace All Purpose Seasoning", price: 0.00, cat: "food", img: "images/grace-all-purpose-seasoning.png", out: true },
-  { id: 45, name: "Grace Butter Beans", price: 0.00, cat: "food", img: "images/grace-butter-bean-640x.png", out: true },
-  { id: 46, name: "Grace Coconut Milk", price: 0.00, cat: "food", img: "images/grace-coconut-milk.png", out: true },
-  { id: 47, name: "Grace Coconut Milk Powder", price: 0.00, cat: "food", img: "images/grace-coconut-milk-powder.png", out: true },
-  { id: 48, name: "Grace Condensed Milk", price: 0.00, cat: "food", img: "images/grace-condensed-milk-397g.png", out: true },
-  { id: 49, name: "Grace Fish Flavour Soup Mix", price: 0.00, cat: "food", img: "images/grace-fish-flavour-soup-mix.png", out: true },
-  { id: 50, name: "Grace Hot Tomato Ketchup", price: 0.00, cat: "food", img: "images/grace-hot-tomato-ketchup-570x.png", out: true },
-  { id: 51, name: "Grace Mackerel Hot & Spicy", price: 0.00, cat: "food", img: "images/grace-mackerel-hot-and-spicy-5.5oz.png", out: true },
-  { id: 52, name: "Grace Mackerel in Tomato Sauce", price: 0.00, cat: "food", img: "images/grace-mackerel-in-tomato-sauce.png", out: true },
-  { id: 53, name: "Grace Plantain Chips", price: 0.00, cat: "food", img: "images/grace-plantain-chips.png", out: true },
-  { id: 54, name: "Grace Pumpkin Soup Mix", price: 0.00, cat: "food", img: "images/grace-pumpkin-soup-mix-370x.png", out: true },
-  { id: 55, name: "Guava Jelly", price: 0.00, cat: "food", img: "images/guava-jelly.png", out: true },
-  { id: 56, name: "Jackass Corn", price: 0.00, cat: "food", img: "images/island-choice-jackass-corn.png", out: true },
-  { id: 57, name: "Tastee Coco Bread", price: 0.00, cat: "food", img: "images/jamaican-tastee-coco-bread.png", out: true },
-  { id: 58, name: "Blue Mountain Peak Coffee", price: 0.00, cat: "drink", img: "images/blue-mountain-peak-instant-coffee.png", out: true },
-  { id: 59, name: "Sliced Breadfruit", price: 0.00, cat: "food", img: "images/sliced-breadfruit.png", out: true },
-
-  // SNACKS / FROZEN
-  { id: 60, name: "Juici Beef Patties", price: 0.00, cat: "food", img: "images/juici-beef-patties.png", out: true },
-  { id: 61, name: "Tastee Patties", price: 0.00, cat: "food", img: "images/tastee-patties.png", out: true },
-
-  // DRINKS
   { id: 62, name: "Tropical Rhythm Ginger Beer", price: 0.00, cat: "drink", img: "images/tropical-rhythm-ginger-beer.png", out: true }
 
 ];
 
 let recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
 
-    function loadProducts() {
-      const grid = document.getElementById("products-grid");
-      if (!grid) return;
-      grid.innerHTML = products.map(p => `
-        <div class="product-card" data-cat="${p.cat}">
-          <img src="${p.img}" alt="${p.name}" onclick="addRecentlyViewed(${p.id})">
-          <h3>${p.name}</h3>
-          <p class="product-price">£${p.price.toFixed(2)}</p>
-          ${p.out
-            ? `<div class="out-stock">OUT OF STOCK</div>`
-            : `<button class="btn-green" onclick="addToCart(${p.id})">Add to Basket</button>`
-          }
-        </div>
-      `).join("");
-    }
+function loadProducts() {
+  const grid = document.getElementById("products-grid");
+  if (!grid) return;
+  grid.innerHTML = products.map(p => `
+    <div class="product-card" data-cat="${p.cat}">
+      <img src="${p.img}" alt="${p.name}" onclick="addRecentlyViewed(${p.id})">
+      <h3>${p.name}</h3>
+      <p class="product-price">£${p.price.toFixed(2)}</p>
+      ${p.out
+        ? `<div class="out-stock">OUT OF STOCK</div>`
+        : `<button class="btn-green" onclick="addToCart(${p.id})">Add to Basket</button>`
+      }
+    </div>
+  `).join("");
+}
 
-    loadProducts();
+loadProducts();
+
+</script>
 
     function filterCat(cat, btn) {
       const cards = document.querySelectorAll('#products-grid .product-card');
