@@ -1749,7 +1749,6 @@ async function payNow() {
 
 let products = [
 
-  // 🌾 STAPLES
   { id: 1, name: "Grace Callaloo", price: 3.99, cat: "food", img: "images/grace-callaloo-540g.png" },
   { id: 2, name: "Grace Ackee (Tin)", price: 7.99, cat: "food", img: "images/grace-ackee.png" },
   { id: 3, name: "Grace Cock Soup", price: 1.49, cat: "food", img: "images/grace-cock-soup.png" },
@@ -1759,58 +1758,110 @@ let products = [
   { id: 7, name: "Lasco Food Drink", price: 3.49, cat: "food", img: "images/lasco-vanilla.png" },
   { id: 8, name: "HTB Spice Bun", price: 3.99, cat: "food", img: "images/htb-easter-bun.png" },
 
-  // 🌶️ SAUCES
   { id: 9, name: "Walkerswood Jerk Seasoning", price: 4.99, cat: "sauce", img: "images/walkerswood-jerk-seasoning.png" },
   { id: 11, name: "Grace Hot Pepper Sauce", price: 2.49, cat: "sauce", img: "images/grace-hot-pepper-6fl-570x.png" },
   { id: 12, name: "Eaton’s Jerk BBQ Sauce", price: 4.49, cat: "sauce", img: "images/eaton-jerk-barbeque-sauce.png" },
   { id: 13, name: "Browning Sauce", price: 1.99, cat: "sauce", img: "images/grace-browning.png" },
 
-  // 🥤 DRINKS
   { id: 14, name: "Tropical Rhythms Ginger Beer", price: 2.99, cat: "drink", img: "images/tropical-rhythm-ginger-beer.png" },
   { id: 15, name: "Supligen", price: 2.49, cat: "drink", img: "images/nestle-supligen.png" },
   { id: 16, name: "Milo", price: 3.99, cat: "drink", img: "images/nestle-milo.png" },
   { id: 17, name: "Wray & Nephew Rum Cream", price: 14.99, cat: "drink", img: "images/wray-and-nephew-rum-cream.png" },
 
-  // 🍬 SWEETS
   { id: 18, name: "Chippies Banana Chips", price: 1.49, cat: "sweet", img: "images/banana-chip.png" },
   { id: 19, name: "Butterkist Biscuits", price: 1.99, cat: "sweet", img: "images/butterkist-parrot-cookies-coconut-50g-470x.png" },
   { id: 20, name: "Gizzada", price: 2.49, cat: "sweet", img: "images/gizzada.png" },
   { id: 21, name: "Coconut Drops", price: 2.49, cat: "sweet", img: "images/coconut-drops.png" },
 
-  // 🧼 PERSONAL CARE
   { id: 24, name: "Carbolic Soap", price: 1.49, cat: "personal", img: "images/carbolic-soap.png" },
-
-  // 🥫 EXTRA ITEMS
-  { id: 28, name: "Grace Baked Beans", price: 1.99, cat: "food", img: "images/grace-bake-beans-400g_940x.png" },
-  { id: 29, name: "Water Crackers", price: 2.49, cat: "food", img: "images/water-crackers.png" },
-  { id: 30, name: "Foska Oats", price: 2.99, cat: "food", img: "images/foska-oats.png" },
-  { id: 31, name: "Grace Chicken Soup", price: 1.49, cat: "food", img: "images/grace-chicken-flavored-mix-1270x.png" },
-
-  // ⭐ PLACEHOLDERS
-  { id: 32, name: "Ammens Powder", price: 0.00, cat: "personal", img: "images/ammens-powder.png", out: true },
-  { id: 62, name: "Tropical Rhythm Ginger Beer", price: 0.00, cat: "drink", img: "images/tropical-rhythm-ginger-beer.png", out: true }
 
 ];
 
-let recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function addToCart(id) {
+  const product = products.find(p => p.id === id);
+  const existing = cart.find(i => i.id === id);
+
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ id: product.id, name: product.name, price: product.price, img: product.img, qty: 1 });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartUI();
+}
+
+function changeQty(id, amount) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+
+  item.qty += amount;
+  if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartUI();
+}
+
+function removeItem(id) {
+  cart = cart.filter(i => i.id !== id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const cartItems = document.getElementById("cart-items");
+  const cartEmpty = document.getElementById("cart-empty");
+  const cartSummary = document.getElementById("cart-summary");
+
+  if (!cartItems) return;
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = "";
+    cartEmpty.style.display = "block";
+    cartSummary.style.display = "none";
+    return;
+  }
+
+  cartEmpty.style.display = "none";
+  cartSummary.style.display = "block";
+
+  cartItems.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img src="${item.img}">
+      <div class="cart-item-details">
+        <h4>${item.name}</h4>
+        <p>£${item.price.toFixed(2)}</p>
+
+        <div class="cart-qty-controls">
+          <button onclick="changeQty(${item.id}, -1)">−</button>
+          <span>${item.qty}</span>
+          <button onclick="changeQty(${item.id}, 1)">+</button>
+        </div>
+
+        <button onclick="removeItem(${item.id})">Remove</button>
+      </div>
+    </div>
+  `).join("");
+}
 
 function loadProducts() {
   const grid = document.getElementById("products-grid");
   if (!grid) return;
+
   grid.innerHTML = products.map(p => `
     <div class="product-card" data-cat="${p.cat}">
-      <img src="${p.img}" alt="${p.name}" onclick="addRecentlyViewed(${p.id})">
+      <img src="${p.img}">
       <h3>${p.name}</h3>
       <p class="product-price">£${p.price.toFixed(2)}</p>
-      ${p.out
-        ? `<div class="out-stock">OUT OF STOCK</div>`
-        : `<button class="btn-green" onclick="addToCart(${p.id})">Add to Basket</button>`
-      }
+      <button class="btn-green" onclick="addToCart(${p.id})">Add to Basket</button>
     </div>
   `).join("");
 }
 
 loadProducts();
+updateCartUI();
 
 </script>
 
@@ -1880,6 +1931,20 @@ function addToCart(id) {
   updateCartUI();
 }
 
+function changeQty(id, amount) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+
+  item.qty += amount;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i.id !== id);
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartUI();
+}
+
 function updateCartUI() {
   const cartCount = document.getElementById("cart-count");
   if (cartCount) {
@@ -1901,25 +1966,20 @@ renderRecentlyViewed();
       if (cartEmpty) cartEmpty.style.display = "none";
       if (cartSummary) cartSummary.style.display = "block";
 
-      cartItems.innerHTML = cart.map(item => `
-        <div class="cart-item">
-          <img src="${item.img}">
-          <div class="cart-item-details">
-            <h4>${item.name}</h4>
-            <p>£${item.price.toFixed(2)}</p>
-
-            <div class="cart-qty-controls">
-              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
-              <span>${item.qty}</span>
-              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-            </div>
-
-            <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
-          </div>
-        </div>
-      `).join("");
-    }
-  }
+ cartItems.innerHTML = cart.map(item => `
+  <div class="cart-item">
+    <img src="${item.img}" class="cart-item-img">
+    <div class="cart-item-info">
+      <h4>${item.name}</h4>
+      <p>£${item.price.toFixed(2)}</p>
+      <div class="qty-controls">
+        <button onclick="changeQty(${item.id}, -1)">−</button>
+        <span>${item.qty}</span>
+        <button onclick="changeQty(${item.id}, 1)">+</button>
+      </div>
+    </div>
+  </div>
+`).join("");
 
   // ---------------- CHECKOUT PAGE ----------------
   const checkoutItems = document.getElementById("checkout-items");
@@ -2014,6 +2074,7 @@ function renderRecentlyViewed() {
 
  </script>
 <script>
+
 const toast = document.getElementById('toast');
 
 function showToast(message) {
