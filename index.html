@@ -1201,7 +1201,7 @@
     <nav class="nav">
       <!-- LOGO -->
       <div class="nav-logo">
-        <img src="logo1.png" alt="Divine Express Logo" width="60" />
+       <img src="images/logo1.PNG" alt="Divine Express Logo" width="60" />
         <div>
           <div class="nav-logo-text">Divine Express</div>
           <div class="nav-logo-sub">BRINGING HOME CLOSER TO YOU</div>
@@ -1727,13 +1727,12 @@ async function payNow() {
   const totalText = document.getElementById("checkout-total").innerText;
   const total = parseFloat(totalText.replace("£", ""));
 
-// 2. Send POST request to Vercel backend
-const response = await fetch("https://divine-backend-ml7j.vercel.app/api/create-checkout-session", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ total }),
-});
-
+  // 2. Send POST request to Vercel backend
+  const response = await fetch("https://divine-backend-vfrc.vercel.app/api/create-checkout-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ total }),
+  });
 
   const data = await response.json();
 
@@ -1747,7 +1746,6 @@ const response = await fetch("https://divine-backend-ml7j.vercel.app/api/create-
   </script>
 
   <script>
-  const products = [
 
   // 🌾 STAPLES
   { id: 1, name: "Grace Callaloo", price: 3.99, cat: "food", img: "images/grace-callaloo-540g.png" },
