@@ -2583,6 +2583,19 @@
       searchInput.addEventListener('input', handleSearch);
     }
   });
+    section.style.display = 'block';
+    container.innerHTML = recentlyViewed.map(p => `
+      <div class="recent-item" onclick="showPage('shop')">
+        <div class="product-image-wrapper">
+          <img src="${p.img}" alt="${p.name}" class="product-image-square">
+        </div>
+        <div class="recent-info">
+          <div>${p.name}</div>
+          <div>£${p.price.toFixed(2)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
 </script>
 
 <script>
