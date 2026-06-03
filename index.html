@@ -2139,67 +2139,163 @@ async function sendPrompt(message) {
 }
 </script>
 
-<!-- ⭐ THIS WAS MISSING — you MUST wrap this block in a script tag -->
 <script>
-function addToCart(id) {
-  const product = products.find(p => p.id === id);
-  if (!product) return;
-  cart.push({ name: product.name, price: product.price });
-  updateCartUI();
-  showToast("Added to basket");
-}
+  // --- STATE ---
+  let cart = [];
+  let recentlyViewed = [];
 
-function addToCartName(name, price) {
-  cart.push({ name, price });
-  updateCartUI();
-  showToast("Added to basket");
-}
-<script>
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-  const target = document.getElementById('page-' + page);
-  if (target) target.classList.add('active-page');
-}
-
-function toggleMenu() {
-  const menu = document.getElementById('mobileMenu');
-  menu.classList.toggle('open');
-}
-
-function renderRecentlyViewed() {
-  const section = document.getElementById("recently-viewed-section");
-  const container = document.getElementById("recently-viewed");
-
-  if (!section || !container) return;
-
-  if (recentlyViewed.length === 0) {
-    section.style.display = "none";
-    return;
+  // --- PAGE NAVIGATION ---
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active-page');
   }
 
-  section.style.display = "block";
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu) menu.classList.toggle('open');
+  }
 
-  container.innerHTML = recentlyViewed.map(id => {
-    const p = products.find(prod => prod.id === id);
-    if (!p) return "";
+  // --- TOAST ---
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
 
-    return `
-      <div class="recent-item" onclick="showPage('shop')">
-        <img src="${p.img}" alt="${p.name}">
-        <div style="font-size:0.9rem;">${p.name}</div>
-        <div style="font-weight:600;">£${p.price.toFixed(2)}</div>
-      </div>
-    `;
-  }).join("");
-}
+  // --- CART LOGIC ---
+  function updateCartUI() {
+    const list = document.getElementById('cart-items');
+    const totalEl = document.getElementById('cart-total');
+    const countEl = document.getElementById('cart-count');
+
+    if (!list || !totalEl || !countEl) return;
+
+    list.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+      total += item.price;
+
+      const li = document.createElement('li');
+      li.className = 'cart-item';
+      li.innerHTML = `
+        <span>${item.name}</span>
+        <span>£${item.price.toFixed(2)}</span>
+        <button class="remove-from-cart" data-index="${index}">×</button>
+      `;
+      list.appendChild(li);
+    });
+
+    totalEl.textContent = '£' + total.toFixed(2);
+    countEl.textContent = cart.length.toString();
+
+    // attach remove handlers
+    list.querySelectorAll('.remove-from-cart').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.getAttribute('data-index'), 10);
+        if (!isNaN(i)) {
+          cart.splice(i, 1);
+          updateCartUI();
+        }
+      });
+    });
+  }
+
+  function addToCartFromButton(btn) {
+    const name = btn.getAttribute('data-name');
+    const priceStr = btn.getAttribute('data-price');
+    const img = btn.getAttribute('data-img');
+
+    if (!name || !priceStr) return;
+
+    const price = parseFloat(priceStr);
+    if (isNaN(price)) return;
+
+    cart.push({ name, price, img });
+    updateCartUI();
+    showToast('Added to basket');
+
+    if (img) addToRecentlyViewed(img, name, price);
+  }
+
+  // --- RECENTLY VIEWED ---
+  function addToRecentlyViewed(img, name, price) {
+    const key = img; // use image path as ID
+    const existingIndex = recentlyViewed.findIndex(p => p.id === key);
+    if (existingIndex !== -1) {
+      recentlyViewed.splice(existingIndex, 1);
+    }
+    recentlyViewed.unshift({ id: key, img, name, price });
+    if (recentlyViewed.length > 10) recentlyViewed.pop();
+
+    try {
+      localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+    } catch (e) {}
+
+    renderRecentlyViewed();
+  }
+
+  function loadRecentlyViewedFromStorage() {
+    try {
+      const stored = localStorage.getItem('recentlyViewed');
+      if (stored) {
+        recentlyViewed = JSON.parse(stored);
+      }
+    } catch (e) {
+      recentlyViewed = [];
+    }
+  }
+
+  function renderRecentlyViewed() {
+    const section = document.getElementById('recently-viewed-section');
+    const container = document.getElementById('recently-viewed');
+
+    if (!section || !container) return;
+
+    if (!recentlyViewed || recentlyViewed.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+
+    container.innerHTML = recentlyViewed.map(p => {
+      if (!p) return '';
+      return `
+        <div class="recent-item" onclick="showPage('shop')">
+          <img src="${p.img}" alt="${p.name}">
+          <div style="font-size:0.9rem;">${p.name}</div>
+          <div style="font-weight:600;">£${p.price.toFixed(2)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // --- REQUEST SENT POPUP (if you use it) ---
+  function showRequestSent() {
+    const el = document.getElementById('requestSent');
+    if (!el) return;
+    el.classList.add('visible');
+    setTimeout(() => el.classList.remove('visible'), 2500);
+  }
+
+  // --- INIT ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // hook up add-to-cart buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', () => addToCartFromButton(btn));
+    });
+
+    loadRecentlyViewedFromStorage();
+    renderRecentlyViewed();
+    updateCartUI();
+  });
 </script>
 
-  <script>
-   let products = [...]
-   ...
-   loadProducts()
-</script>
-  
+
 <div id="toast" class="toast"></div>
 <div id="requestSent" class="request-sent">Request sent! We’re on it.</div>
 
