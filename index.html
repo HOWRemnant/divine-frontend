@@ -1501,7 +1501,7 @@
     updateCartUI();
   }
 
-  function updateCartUI() {
+function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
     const subtotalEl = document.getElementById('cart-subtotal');
@@ -1571,13 +1571,33 @@
 
       checkoutSubtotal.textContent = '£' + total.toFixed(2);
 
-      const concierge = 25;
+      // Determine dynamic courier shipping estimates by country field
+      const countrySelect = document.getElementById('checkout-country');
+      const selectedCountry = countrySelect ? countrySelect.value : 'GB';
+      
+      let shippingCost = 0;
+      if (cart.length > 0) {
+        if (selectedCountry === 'GB') shippingCost = 5.99;
+        else if (selectedCountry === 'US' || selectedCountry === 'CA') shippingCost = 35.00;
+        else if (selectedCountry === 'JM') shippingCost = 15.00;
+        else if (selectedCountry === 'DE' || selectedCountry === 'FR') shippingCost = 18.50;
+        else shippingCost = 45.00; // Rest of world standard fallback
+      }
+
+      // Update the real shipping visual indicator row in your summary
+      const checkoutSummaryRows = checkoutItems.parentElement.querySelectorAll('.cart-row');
+      checkoutSummaryRows.forEach(row => {
+        if (row.textContent.includes('Shipping')) {
+          row.innerHTML = `<span>Shipping (${selectedCountry})</span><span>£${shippingCost.toFixed(2)}</span>`;
+        }
+      });
+
+      const concierge = 30;
       const packaging = 20;
-      const grandTotal = total + concierge + packaging;
+      const grandTotal = total + concierge + packaging + shippingCost;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
   }
-
   // =========================================================================
   // 8. RECENTLY VIEWED
   // =========================================================================
