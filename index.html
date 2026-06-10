@@ -1287,7 +1287,7 @@
 
 <script>
   // =========================================================================
-  // FIXED PRODUCT DATA - RE-ASSIGNED CORRECT IMAGES FROM GITHUB FILENAMES
+  // 1. PRODUCT DATA (UPDATED WITH YOUR IMAGE PATHS)
   // =========================================================================
   const products = [
     // 🌾 STAPLES
@@ -1332,23 +1332,22 @@
     { id: 29, name: "National Water Crackers", price: 2.49, cat: "food", img: "images/water-crackers.png" },
     { id: 30, name: "Andrews Salt Sachets", price: 2.99, cat: "food", img: "images/andrews-original-salt-satchets.png" },
     { id: 31, name: "Nestle Condensed Milk", price: 3.99, cat: "food", img: "images/betty-condensed-milk.png" }
-    ];
+  ];
 
-  // =========================
-  // STATE
-  // =========================
+  // =========================================================================
+  // 2. STATE
+  // =========================================================================
   let cart = [];
   let recentlyViewed = [];
 
-  // =========================
-  // PAGE NAVIGATION
-  // =========================
+  // =========================================================================
+  // 3. PAGE NAVIGATION
+  // =========================================================================
   function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
     const target = document.getElementById('page-' + page);
     if (target) target.classList.add('active-page');
     
-    // Close mobile menu when a page shifts
     const menu = document.getElementById('mobileMenu');
     if (menu) menu.classList.remove('open');
   }
@@ -1358,9 +1357,9 @@
     if (menu) menu.classList.toggle('open');
   }
 
-  // =========================
-  // TOAST
-  // =========================
+  // =========================================================================
+  // 4. TOAST NOTIFICATIONS
+  // =========================================================================
   function showToast(message) {
     const toast = document.getElementById('toast');
     if (!toast) return;
@@ -1369,9 +1368,9 @@
     setTimeout(() => toast.classList.remove('show'), 2500);
   }
 
-  // =========================
-  // PRODUCT RENDERING
-  // =========================
+  // =========================================================================
+  // 5. PRODUCT RENDERING
+  // =========================================================================
   function renderProducts(list) {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
@@ -1394,11 +1393,10 @@
     }).join('');
   }
 
-// =========================================================================
-// FIXED FILTERING & SEARCH (PREVENTS QUANTITY BUTTONS FROM CRASHING NAV)
-// =========================================================================
+  // =========================================================================
+  // 6. FILTERING & SEARCH (SCOPED TO PREVENT BUTTON CONFLICTS)
+  // =========================================================================
   function filterCat(cat, btn) {
-    // Only remove active state from the main top category buttons
     if (btn) {
       document.querySelectorAll('.category-bar .cat-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1416,7 +1414,6 @@
   }
 
   function handleSearch() {
-    // Specifically look for the active button inside the category bar, ignored cart buttons
     const activeBtn = document.querySelector('.category-bar .cat-btn.active');
     const cat = activeBtn ? activeBtn.textContent.toLowerCase() : 'all';
 
@@ -1431,18 +1428,17 @@
   }
 
   // =========================================================================
-  //UPDATED CART SYSTEM (HANDLES MULTIPLE QUANTITIES TOGETHER WITH +/- BUTTONS)
+  // 7. UNIFIED QUANTITY CART SYSTEM
   // =========================================================================
   function addToCart(id) {
     const product = products.find(p => p.id === id);
     if (!product || product.out) return;
 
-    // Check if the item is already in the basket
     const existingItem = cart.find(item => item.id === id);
     if (existingItem) {
-      existingItem.quantity += 1; // Increase quantity instead of adding a new row
+      existingItem.quantity += 1;
     } else {
-      cart.push({ ...product, quantity: 1 }); // Add new item with a starting quantity of 1
+      cart.push({ ...product, quantity: 1 });
     }
 
     updateCartUI();
@@ -1451,7 +1447,6 @@
   }
 
   function addToCartName(name, price) {
-    // For custom or static items, we use the name to look for duplicates
     const existingItem = cart.find(item => item.name === name);
     if (existingItem) {
       existingItem.quantity += 1;
@@ -1469,11 +1464,10 @@
     updateCartUI();
   }
 
-  // NEW FUNCTION: Handles changing numbers when pressing + / - or typing a number
   function updateQuantity(index, newQty) {
     newQty = parseInt(newQty, 10);
     if (isNaN(newQty) || newQty <= 0) {
-      removeFromCart(index); // If quantity drops to 0 or lower, completely remove item
+      removeFromCart(index);
       return;
     }
     cart[index].quantity = newQty;
@@ -1494,7 +1488,7 @@
 
     list.innerHTML = '';
     let total = 0;
-    let totalItemsCount = 0; // Tracks overall quantity (e.g., 2 buns + 1 cheese = 3 total items)
+    let totalItemsCount = 0;
 
     if (cart.length === 0) {
       if (emptyEl) emptyEl.style.display = 'block';
@@ -1503,9 +1497,10 @@
     }
 
     cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
+      const qty = item.quantity || 1;
+      const itemTotal = item.price * qty;
       total += itemTotal;
-      totalItemsCount += item.quantity;
+      totalItemsCount += qty;
 
       const li = document.createElement('li');
       li.className = 'cart-item';
@@ -1514,13 +1509,11 @@
         <div class="cart-item-details">
           <h4>${item.name}</h4>
           <p>£${item.price.toFixed(2)} each</p>
-          
           <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${item.quantity - 1})">-</button>
-            <input type="number" value="${item.quantity}" min="1" style="width: 45px; text-align: center; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" onchange="updateQuantity(${index}, this.value)">
-            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${item.quantity + 1})">+</button>
+            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${qty - 1})">-</button>
+            <input type="number" value="${qty}" min="1" style="width: 45px; text-align: center; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" onchange="updateQuantity(${index}, this.value)">
+            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${qty + 1})">+</button>
           </div>
-
           <button class="remove-btn remove-from-cart" data-index="${index}">Remove entirely</button>
         </div>
         <div style="font-weight: bold; margin-left: auto;">
@@ -1532,7 +1525,7 @@
 
     totalEl.textContent = total.toFixed(2);
     if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
-    countEl.textContent = totalItemsCount.toString(); // Updates green navbar bag badge correctly
+    countEl.textContent = totalItemsCount.toString();
 
     list.querySelectorAll('.remove-from-cart').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1541,12 +1534,11 @@
       });
     });
 
-    // Checkout Page Summary Layout updates
     if (checkoutItems && checkoutSubtotal && checkoutTotal) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
-          <span>${item.name} (x${item.quantity})</span>
-          <span>£${(item.price * item.quantity).toFixed(2)}</span>
+          <span>${item.name} (x${item.quantity || 1})</span>
+          <span>£${(item.price * (item.quantity || 1)).toFixed(2)}</span>
         </div>
       `).join('');
 
@@ -1557,10 +1549,11 @@
       const grandTotal = total + concierge + packaging;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
-  
-  // =========================
-  // RECENTLY VIEWED
-  // =========================
+  }
+
+  // =========================================================================
+  // 8. RECENTLY VIEWED
+  // =========================================================================
   function addToRecentlyViewed(product) {
     const existingIndex = recentlyViewed.findIndex(p => p.id === product.id);
     if (existingIndex !== -1) {
@@ -1609,9 +1602,9 @@
     `).join('');
   }
 
-  // =========================
-  // CONCIERGE REQUEST
-  // =========================
+  // =========================================================================
+  // 9. CONCIERGE REQUEST & PAYMENT FLOW
+  // =========================================================================
   function sendPrompt(text) {
     if (!text || !text.trim()) {
       showToast("Please describe what you want us to source.");
@@ -1620,38 +1613,25 @@
     showToast("Request sent to concierge.");
   }
 
-  // =========================
-  // CHECKOUT PAYMENT FLOW
-  // =========================
   function payNow() {
     showToast("Payment flow not wired yet (Stripe).");
   }
 
-  // =========================
-  // INITIALIZATION
-  // =========================
+  // =========================================================================
+  // 10. CLEAN INITIALIZATION
+  // =========================================================================
   document.addEventListener('DOMContentLoaded', () => {
-    // 1. Ensure the cart array is completely empty or properly structured on load
-    cart = []; 
-    
-    // 2. Render out your products list
     renderProducts(products);
-    
-    // 3. Load recently viewed items safely
     loadRecentlyViewedFromStorage();
     renderRecentlyViewed();
-    
-    // 4. Update the UI safely
     updateCartUI();
 
-    // 5. Setup search input listener
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
       searchInput.addEventListener('input', handleSearch);
     }
   });
 </script>
-
 <div id="toast" class="toast"></div>
 
 </body>
