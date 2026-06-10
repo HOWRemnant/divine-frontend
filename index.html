@@ -554,6 +554,40 @@
       padding-top: 6px;
     }
 
+    /* Checkout Grid Layout adjustments */
+    .checkout-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+      padding: 20px;
+      /* Aligns the container content to the top left */
+      align-items: start; 
+    }
+
+    @media (min-width: 768px) {
+      .checkout-container {
+        /* Splitting into a 60% Left column and 40% Right summary column */
+        grid-template-columns: 6fr 4fr; 
+      }
+    }
+
+    /* Prevents the input boxes from expanding past a comfortable viewing width */
+    .checkout-form {
+      background: var(--color-background-primary);
+      padding: 20px;
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--color-border-tertiary);
+      max-width: 550px;    /* Keeps the form beautifully sized to the left instead of stretching */
+      width: 100%;
+    }
+
+    .checkout-summary {
+      background: var(--color-background-secondary);
+      padding: 25px;
+      border-radius: var(--border-radius-lg);
+      position: sticky;
+      top: 100px;
+    }
     .request-box {
       background: #f5f5f5;
       padding: 15px;
@@ -563,6 +597,24 @@
       flex-direction: column;
       gap: 10px;
       font-size: 0.9rem;
+    }
+
+    .cart-footer {
+      padding: 20px;
+      border-top: 1px solid var(--color-border-tertiary);
+      background: var(--color-background-primary);
+      /* This creates a safe distance from the bottom edge of the slider panel */
+      padding-bottom: 35px; 
+    }
+
+    /* Style specifically for the cart checkout button to size it nicely */
+    .cart-footer .btn-green {
+      display: block;
+      width: 85%;          /* Makes the button slightly smaller/narrower */
+      margin: 0 auto;      /* Centers the smaller button horizontally */
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
     }
 
     .request-input {
