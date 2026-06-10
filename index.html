@@ -1049,12 +1049,39 @@
       <h2>Checkout</h2>
       <div class="two-col">
         <div>
-          <h3>Shipping Address</h3>
-          <div class="form-group"><input type="text" class="form-input" placeholder="Full name"></div>
-          <div class="form-group"><input type="text" class="form-input" placeholder="Address line 1"></div>
-          <div class="form-group"><input type="text" class="form-input" placeholder="City"></div>
-          <div class="form-group"><input type="text" class="form-input" placeholder="Country"></div>
-        </div>
+        <h3>Shipping Address</h3>
+          <div class="form-group">
+            <label class="form-label">Full name</label>
+            <input type="text" class="form-input" placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Address Line 1</label>
+            <input type="text" class="form-input" placeholder="Street address, P.O. box, company name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">City / Town</label>
+            <input type="text" class="form-input" placeholder="e.g. Kingston or London">
+          </div>
+          <div class="form-group">
+            <label class="form-label">State / County / Parish</label>
+            <input type="text" class="form-input" placeholder="e.g. St. Andrew or Greater London">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ZIP / Postal Code</label>
+            <input type="text" class="form-input" placeholder="e.g. W1A 1AA, KGN 10, or 00000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country / Destination</label>
+            <select id="checkout-country" class="form-input" style="height: 38px; cursor: pointer;" onchange="updateCartUI()">
+              <option value="GB">United Kingdom (UK)</option>
+              <option value="US">United States (USA)</option>
+              <option value="CA">Canada</option>
+              <option value="JM">Jamaica</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="ROW">Rest of the World</option>
+            </select>
+          </div>
 
         <div class="cart-summary">
           <h3>Order Summary</h3>
