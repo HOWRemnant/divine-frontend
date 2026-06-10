@@ -1178,7 +1178,7 @@
       <h2>Your Basket</h2>
       <div class="two-col">
         <div>
-          <ul id="cart-items"></ul>
+          <div id="cart-items"></div>
           <div id="cart-empty" style="display:none; text-align:center; margin-top:40px;">
             <p>Your basket is empty.</p>
           </div>
@@ -1280,52 +1280,52 @@
     💬 Contact Us
   </a>
 
- <script>
+<script>
   // =========================
   // PRODUCT DATA
   // =========================
   const products = [
     // 🌾 STAPLES
-    { id: 1, name: "Grace Callaloo", price: 3.99, cat: "food", img: "https://via.placeholder.com/300?text=Grace+Callaloo" },
-    { id: 2, name: "Grace Ackee (Tin)", price: 7.99, cat: "food", img: "https://via.placeholder.com/300?text=Grace+Ackee" },
-    { id: 3, name: "Grace Cock Soup", price: 1.49, cat: "food", img: "https://via.placeholder.com/300?text=Cock+Soup" },
-    { id: 4, name: "Betapac Curry Powder", price: 2.99, cat: "food", img: "https://via.placeholder.com/300?text=Betapac+Curry" },
-    { id: 5, name: "National Bulla", price: 1.99, cat: "food", img: "https://via.placeholder.com/300?text=Bulla", out: true },
-    { id: 6, name: "Grace Corned Beef", price: 4.49, cat: "food", img: "https://via.placeholder.com/300?text=Corned+Beef" },
-    { id: 7, name: "Lasco Food Drink", price: 3.49, cat: "food", img: "https://via.placeholder.com/300?text=Lasco" },
-    { id: 8, name: "HTB Spice Bun", price: 3.99, cat: "food", img: "https://via.placeholder.com/300?text=HTB+Bun" },
+    { id: 1, name: "Grace Callaloo", price: 3.99, cat: "food", img: "images/ammens-powder.png" },
+    { id: 2, name: "Grace Ackee (Tin)", price: 7.99, cat: "food", img: "images/andrews-original-salt-satchets.png" },
+    { id: 3, name: "Grace Cock Soup", price: 1.49, cat: "food", img: "images/banana-chip.png" },
+    { id: 4, name: "Betapac Curry Powder", price: 2.99, cat: "food", img: "images/betapac-curry-110g.png" },
+    { id: 5, name: "National Bulla", price: 1.99, cat: "food", img: "images/bulla-cake.png", out: true },
+    { id: 6, name: "Grace Corned Beef", price: 4.49, cat: "food", img: "images/betty-condensed-milk.png" },
+    { id: 7, name: "Lasco Food Drink", price: 3.49, cat: "food", img: "images/blue-mountain-peak-instant-co...png" },
+    { id: 8, name: "HTB Spice Bun", price: 3.99, cat: "food", img: "images/butterkist-parrot-cookies-cocon...png" },
 
     // 🌶️ SAUCES
-    { id: 9, name: "Walkerswood Jerk Seasoning", price: 4.99, cat: "sauce", img: "https://via.placeholder.com/300?text=Walkerswood+Jerk" },
-    { id: 10, name: "Pickapeppa Sauce", price: 3.99, cat: "sauce", img: "https://via.placeholder.com/300?text=Pickapeppa" },
-    { id: 11, name: "Grace Hot Pepper Sauce", price: 2.49, cat: "sauce", img: "https://via.placeholder.com/300?text=Grace+Pepper" },
-    { id: 12, name: "Eaton’s Jerk BBQ Sauce", price: 4.49, cat: "sauce", img: "https://via.placeholder.com/300?text=Eatons+BBQ" },
-    { id: 13, name: "Browning Sauce", price: 1.99, cat: "sauce", img: "https://via.placeholder.com/300?text=Browning" },
+    { id: 9, name: "Walkerswood Jerk Seasoning", price: 4.99, cat: "sauce", img: "images/benjamins-eucalyptus-oil-570x....png" },
+    { id: 10, name: "Pickapeppa Sauce", price: 3.99, cat: "sauce", img: "images/benjamins-vanilla-240ml_1000x....png" },
+    { id: 11, name: "Grace Hot Pepper Sauce", price: 2.49, cat: "sauce", img: "images/betapac-curry-110g.png" },
+    { id: 12, name: "Eaton’s Jerk BBQ Sauce", price: 4.49, cat: "sauce", img: "images/bulla-cake.png" },
+    { id: 13, name: "Browning Sauce", price: 1.99, cat: "sauce", img: "images/banana-chip.png" },
 
     // 🥤 DRINKS
-    { id: 14, name: "Tropical Rhythms", price: 2.99, cat: "drink", img: "https://via.placeholder.com/300?text=Tropical+Rhythms" },
-    { id: 15, name: "Supligen", price: 2.49, cat: "drink", img: "https://via.placeholder.com/300?text=Supligen" },
-    { id: 16, name: "Milo", price: 3.99, cat: "drink", img: "https://via.placeholder.com/300?text=Milo" },
-    { id: 17, name: "Wray & Nephew Rum Cream", price: 14.99, cat: "drink", img: "https://via.placeholder.com/300?text=Rum+Cream" },
+    { id: 14, name: "Tropical Rhythms", price: 2.99, cat: "drink", img: "images/blue-mountain-peak-instant-co...png" },
+    { id: 15, name: "Supligen", price: 2.49, cat: "drink", img: "images/betty-condensed-milk.png" },
+    { id: 16, name: "Milo", price: 3.99, cat: "drink", img: "images/andrews-original-salt-satchets.png" },
+    { id: 17, name: "Wray & Nephew Rum Cream", price: 14.99, cat: "drink", img: "images/benjamins-vanilla-240ml_1000x....png" },
 
     // 🍬 SWEETS
-    { id: 18, name: "Chippies Banana Chips", price: 1.49, cat: "sweet", img: "https://via.placeholder.com/300?text=Banana+Chips" },
-    { id: 19, name: "St. Mary Banana Chips", price: 1.49, cat: "sweet", img: "https://via.placeholder.com/300?text=St+Mary+Chips" },
-    { id: 20, name: "Devon Biscuits", price: 1.99, cat: "sweet", img: "https://via.placeholder.com/300?text=Devon+Biscuits" },
-    { id: 21, name: "Gizzada", price: 2.49, cat: "sweet", img: "https://via.placeholder.com/300?text=Gizzada" },
-    { id: 22, name: "Coconut Drops", price: 2.49, cat: "sweet", img: "https://via.placeholder.com/300?text=Coconut+Drops" },
+    { id: 18, name: "Chippies Banana Chips", price: 1.49, cat: "sweet", img: "images/banana-chip.png" },
+    { id: 19, name: "St. Mary Banana Chips", price: 1.49, cat: "sweet", img: "images/banana-chip.png" },
+    { id: 20, name: "Devon Biscuits", price: 1.99, cat: "sweet", img: "images/butterkist-parrot-cookies-cocon...png" },
+    { id: 21, name: "Gizzada", price: 2.49, cat: "sweet", img: "images/bulla-cake.png" },
+    { id: 22, name: "Coconut Drops", price: 2.49, cat: "sweet", img: "images/bulla-cake.png" },
 
     // 🧴 PERSONAL CARE
-    { id: 23, name: "Blue Power Soap", price: 1.99, cat: "personal", img: "https://via.placeholder.com/300?text=Blue+Soap" },
-    { id: 24, name: "Carbolic Soap", price: 1.49, cat: "personal", img: "https://via.placeholder.com/300?text=Carbolic+Soap" },
-    { id: 25, name: "Nutmeg Oil", price: 5.99, cat: "personal", img: "https://via.placeholder.com/300?text=Nutmeg+Oil" },
-    { id: 26, name: "Castor Oil", price: 6.99, cat: "personal", img: "https://via.placeholder.com/300?text=Castor+Oil" },
-    { id: 27, name: "Sulphur Ointment", price: 3.49, cat: "personal", img: "https://via.placeholder.com/300?text=Sulphur+Ointment" },
+    { id: 23, name: "Blue Power Soap", price: 1.99, cat: "personal", img: "images/ammens-powder.png" },
+    { id: 24, name: "Carbolic Soap", price: 1.49, cat: "personal", img: "images/benjamins-eucalyptus-oil-570x....png" },
+    { id: 25, name: "Nutmeg Oil", price: 5.99, cat: "personal", img: "images/benjamins-eucalyptus-oil-570x....png" },
+    { id: 26, name: "Castor Oil", price: 6.99, cat: "personal", img: "images/benjamins-eucalyptus-oil-570x....png" },
+    { id: 27, name: "Sulphur Ointment", price: 3.49, cat: "personal", img: "images/ammens-powder.png" },
 
     // EXTRA ITEMS TO REACH 30
-    { id: 28, name: "Grace Baked Beans", price: 1.99, cat: "food", img: "https://via.placeholder.com/300?text=Baked+Beans" },
-    { id: 29, name: "National Water Crackers", price: 2.49, cat: "food", img: "https://via.placeholder.com/300?text=Water+Crackers" },
-    { id: 30, name: "Lasco Oats Porridge Mix", price: 2.99, cat: "food", img: "https://via.placeholder.com/300?text=Lasco+Oats" }
+    { id: 28, name: "Grace Baked Beans", price: 1.99, cat: "food", img: "images/betapac-curry-110g.png" },
+    { id: 29, name: "National Water Crackers", price: 2.49, cat: "food", img: "images/butterkist-parrot-cookies-cocon...png" },
+    { id: 30, name: "Lasco Oats Porridge Mix", price: 2.99, cat: "food", img: "images/betty-condensed-milk.png" }
   ];
 
   // =========================
@@ -1338,9 +1338,13 @@
   // PAGE NAVIGATION
   // =========================
   function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
     const target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active');
+    if (target) target.classList.add('active-page');
+    
+    // Close mobile menu when a page shifts
+    const menu = document.getElementById('mobileMenu');
+    if (menu) menu.classList.remove('open');
   }
 
   function toggleMenu() {
@@ -1406,7 +1410,6 @@
     const activeBtn = document.querySelector('.cat-btn.active');
     const cat = activeBtn ? activeBtn.textContent.toLowerCase() : 'all';
 
-    // map button label back to cat key
     let catKey = 'all';
     if (cat.includes('staples')) catKey = 'food';
     else if (cat.includes('sauces')) catKey = 'sauce';
@@ -1431,12 +1434,7 @@
   }
 
   function addToCartName(name, price) {
-    const customItem = {
-      id: Date.now(), // safe temporary unique ID
-      name: name,
-      price: price,
-      img: "https://via.placeholder.com/300?text=" + encodeURIComponent(name)
-    };
+    const customItem = { id: Date.now(), name: name, price: price, img: 'images/logo1.PNG' };
     cart.push(customItem);
     updateCartUI();
     showToast("Added to basket");
@@ -1451,7 +1449,9 @@
   function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
+    const subtotalEl = document.getElementById('cart-subtotal');
     const countEl = document.getElementById('cart-count');
+    const emptyEl = document.getElementById('cart-empty');
     const checkoutItems = document.getElementById('checkout-items');
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
     const checkoutTotal = document.getElementById('checkout-total');
@@ -1461,9 +1461,10 @@
     list.innerHTML = '';
     let total = 0;
 
-    const emptyEl = document.getElementById('cart-empty');
-    if (emptyEl) {
-      emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
+    if (cart.length === 0) {
+      if (emptyEl) emptyEl.style.display = 'block';
+    } else {
+      if (emptyEl) emptyEl.style.display = 'none';
     }
 
     cart.forEach((item, index) => {
@@ -1471,7 +1472,7 @@
       const li = document.createElement('li');
       li.className = 'cart-item';
       li.innerHTML = `
-        <img src="${item.img || 'https://via.placeholder.com/70'}" alt="${item.name}">
+        <img src="${item.img}" alt="${item.name}">
         <div class="cart-item-details">
           <h4>${item.name}</h4>
           <p>£${item.price.toFixed(2)}</p>
@@ -1482,6 +1483,7 @@
     });
 
     totalEl.textContent = total.toFixed(2);
+    if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
     countEl.textContent = cart.length.toString();
 
     list.querySelectorAll('.remove-from-cart').forEach(btn => {
@@ -1491,7 +1493,7 @@
       });
     });
 
-    // Checkout summary
+    // Checkout Summary update
     if (checkoutItems && checkoutSubtotal && checkoutTotal) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
@@ -1561,7 +1563,7 @@
   }
 
   // =========================
-  // REQUEST SENT (CONCIERGE)
+  // CONCIERGE REQUEST
   // =========================
   function sendPrompt(text) {
     if (!text || !text.trim()) {
@@ -1572,14 +1574,14 @@
   }
 
   // =========================
-  // PAY NOW (PLACEHOLDER)
+  // CHECKOUT PAYMENT FLOW
   // =========================
   function payNow() {
     showToast("Payment flow not wired yet (Stripe).");
   }
 
   // =========================
-  // INIT
+  // INITIALIZATION
   // =========================
   document.addEventListener('DOMContentLoaded', () => {
     renderProducts(products);
@@ -1595,7 +1597,6 @@
 </script>
 
 <div id="toast" class="toast"></div>
-<div id="requestSent" class="request-sent">Request sent! We’re on it.</div>
 
 </body>
 </html>
