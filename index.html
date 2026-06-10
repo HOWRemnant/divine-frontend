@@ -27,7 +27,6 @@
       background: linear-gradient(to right, #000000 0%, #ffd700 33%, #009b3a 66%);
       position: relative;
       z-index: 1;
-      pointer-events: none; /* FIX: Allows clicks to pass through to elements underneath */
     }
 
     /* Header & nav */
@@ -486,6 +485,7 @@
     .cart-item {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 15px;
       padding: 15px;
       border-bottom: 1px solid #ddd;
@@ -503,28 +503,12 @@
       padding: 5px;
     }
 
-    .cart-item-details {
-      flex: 1;
-    }
-
-    .cart-item-details h4 {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .cart-item-details p {
-      margin: 4px 0;
-      font-size: 0.9rem;
-    }
-
-    .remove-btn {
+    .remove-from-cart {
       background: none;
       border: none;
       color: #b30000;
       cursor: pointer;
-      margin-top: 6px;
-      font-size: 0.85rem;
+      font-size: 1.2rem;
       font-weight: bold;
     }
 
@@ -1336,17 +1320,42 @@
   let recentlyViewed = [];
 
   // =========================
-  // PAGE NAVIGATION
+  // PAGE NAVIGATION (FIXED)
   // =========================
   function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active');
+    // 1. Remove the active active-page selector from all containers
+    document.querySelectorAll('.page').forEach(p => {
+      p.classList.remove('active-page');
+    });
+    
+    // 2. Identify layout wrappers dynamically
+    let targetId = 'page-' + page;
+    let target = document.getElementById(targetId);
+    
+    if (!target) {
+      target = document.getElementById(page);
+    }
+    
+    // 3. Make target visible and scroll safely to view window
+    if (target) {
+      target.classList.add('active-page');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      console.error("Divine Express System Error: Page container target absolute mismatch layout configuration: ", page);
+    }
+
+    // 4. Ensure the mobile panel dismisses gracefully upon selection
+    const menu = document.getElementById('mobileMenu');
+    if (menu) {
+      menu.classList.remove('open');
+    }
   }
 
   function toggleMenu() {
     const menu = document.getElementById('mobileMenu');
-    if (menu) menu.classList.toggle('open');
+    if (menu) {
+      menu.classList.toggle('open');
+    }
   }
 
   // =========================
@@ -1431,6 +1440,14 @@
     addToRecentlyViewed(product);
   }
 
+  // Helper function for raw string additions (e.g. UK page items)
+  function addToCartName(name, price) {
+    const manualItem = { id: Date.now(), name: name, price: price, cat: "sourced", img: "https://via.placeholder.com/300?text=Sourced+Item" };
+    cart.push(manualItem);
+    updateCartUI();
+    showToast("Added to basket");
+  }
+
   function removeFromCart(index) {
     if (index < 0 || index >= cart.length) return;
     cart.splice(index, 1);
@@ -1441,6 +1458,7 @@
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
     const countEl = document.getElementById('cart-count');
+    const emptyEl = document.getElementById('cart-empty');
     const checkoutItems = document.getElementById('checkout-items');
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
     const checkoutTotal = document.getElementById('checkout-total');
@@ -1450,23 +1468,31 @@
     list.innerHTML = '';
     let total = 0;
 
+    if (cart.length === 0) {
+      if (emptyEl) emptyEl.style.display = 'block';
+    } else {
+      if (emptyEl) emptyEl.style.display = 'none';
+    }
+
     cart.forEach((item, index) => {
       total += item.price;
-      const li = document.createElement('li');
+      const li = document.createElement('div');
       li.className = 'cart-item';
       li.innerHTML = `
-        <span>${item.name}</span>
-        <span>£${item.price.toFixed(2)}</span>
+        <div class="cart-item-details">
+          <h4>${item.name}</h4>
+          <p>£${item.price.toFixed(2)}</p>
+        </div>
         <button class="remove-from-cart" data-index="${index}">×</button>
       `;
       list.appendChild(li);
     });
 
-    totalEl.textContent = '£' + total.toFixed(2);
+    totalEl.textContent = total.toFixed(2);
     countEl.textContent = cart.length.toString();
 
     list.querySelectorAll('.remove-from-cart').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
         const i = parseInt(btn.getAttribute('data-index'), 10);
         removeFromCart(i);
       });
@@ -1575,7 +1601,6 @@
   });
 </script>
 
-<div id="toast" class="toast"></div>
 <div id="requestSent" class="request-sent">Request sent! We’re on it.</div>
 
 </body>
