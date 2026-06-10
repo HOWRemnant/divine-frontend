@@ -1742,7 +1742,7 @@ function updateCartUI() {
   }
 
   // =========================================================================
-  // 9. CONCIERGE REQUEST & SECURE STRIPE CHECKOUT FLOW
+  // 9. CONCIERGE REQUEST & DIRECT STRIPE PAYMENT LINK FLOW
   // =========================================================================
   function sendPrompt(text) {
     if (!text || !text.trim()) {
@@ -1752,53 +1752,23 @@ function updateCartUI() {
     showToast("Request sent to concierge.");
   }
 
-  async function payNow() {
+  function payNow() {
     if (cart.length === 0) {
       showToast("Your basket is empty.");
       return;
     }
 
-    showToast("Preparing secure checkout...");
+    showToast("Redirecting to secure Stripe Checkout...");
 
-    // 1. Gather configuration details to calculate total value on your server
-    const countrySelect = document.getElementById('checkout-country');
-    const selectedCountry = countrySelect ? countrySelect.value : 'GB';
+    // 1. Go to your Stripe Dashboard -> Payments -> Payment Links
+    // 2. Create a generic link for your shop, copy the URL (e.g., https://buy.stripe.com/abc123xyz)
+    // 3. Paste your real link address inside the quotes below:
+    const stripePaymentLink = "https://buy.stripe.com/mock_link_placeholder";
 
-    try {
-      // 2. Send the basket data to your backend server endpoint
-      // NOTE: Replace '/create-payment-intent' with your live server web address if hosted elsewhere
-      const response = await fetch('/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          items: cart,
-          country: selectedCountry 
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.clientSecret) {
-        throw new Error(data.error || "Failed to setup payment gateway session.");
-      }
-
-      // 3. Initialize Stripe using your PUBLIC test/live key (Safe for customers to see)
-      // IMPORTANT: Swap 'your_stripe_publishable_key_here' with your real Publishable Key from your Stripe Dashboard (starts with pk_)
-      const stripe = Stripe('your_stripe_publishable_key_here');
-
-      // 4. Redirect the browser window securely to Stripe's hosted checkout screen
-      const result = await stripe.redirectToCheckout({
-        sessionId: data.sessionId
-      });
-
-      if (result.error) {
-        showToast(result.error.message);
-      }
-
-    } catch (err) {
-      console.error("Payment Gateway Error:", err);
-      showToast("Payment failed: " + err.message);
-    }
+    // 4. Safely open your Stripe checkout page in a fresh browser tab
+    setTimeout(() => {
+      window.open(stripePaymentLink, '_blank');
+    }, 1000);
   }
 
   // =========================================================================
