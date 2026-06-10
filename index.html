@@ -1044,60 +1044,75 @@
     </div>
   </div>
 
-  <div id="page-checkout" class="page">
-    <div class="section">
-      <h2>Checkout</h2>
-      <div class="two-col">
-        <div>
+ <div id="page-checkout" class="page">
+    <div class="checkout-container">
+      <div class="checkout-form">
         <h3>Shipping Address</h3>
-          <div class="form-group">
-            <label class="form-label">Full name</label>
-            <input type="text" class="form-input" placeholder="e.g. John Doe">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Address Line 1</label>
-            <input type="text" class="form-input" placeholder="Street address, P.O. box, company name">
-          </div>
-          <div class="form-group">
-            <label class="form-label">City / Town</label>
-            <input type="text" class="form-input" placeholder="e.g. Kingston or London">
-          </div>
-          <div class="form-group">
-            <label class="form-label">State / County / Parish</label>
-            <input type="text" class="form-input" placeholder="e.g. St. Andrew or Greater London">
-          </div>
-          <div class="form-group">
-            <label class="form-label">ZIP / Postal Code</label>
-            <input type="text" class="form-input" placeholder="e.g. W1A 1AA, KGN 10, or 00000">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Country / Destination</label>
-            <select id="checkout-country" class="form-input" style="height: 38px; cursor: pointer;" onchange="updateCartUI()">
-              <option value="GB">United Kingdom (UK)</option>
-              <option value="US">United States (USA)</option>
-              <option value="CA">Canada</option>
-              <option value="JM">Jamaica</option>
-              <option value="DE">Germany</option>
-              <option value="FR">France</option>
-              <option value="ROW">Rest of the World</option>
-            </select>
-          </div>
-
-        <div class="cart-summary">
-          <h3>Order Summary</h3>
-          <div id="checkout-items"></div>
-          <div class="cart-row"><span>Items</span><span id="checkout-subtotal">£0.00</span></div>
-          <div class="cart-row"><span>Concierge service</span><span>£25.00</span></div>
-          <div class="cart-row"><span>Packaging</span><span>£20.00</span></div>
-          <div class="cart-row"><span>Shipping</span><span>Calculated at checkout</span></div>
-          <div class="cart-row total">
-            <span>Total Due Today</span>
-            <span id="checkout-total">£45.00</span>
-          </div>
-          <button class="btn-green" style="margin-top:20px;" onclick="payNow()">
-            Pay Now
-          </button>
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input type="text" class="form-input" placeholder="e.g. John Doe">
         </div>
+        <div class="form-group">
+          <label class="form-label">Address Line 1</label>
+          <input type="text" class="form-input" placeholder="Street address, P.O. box, company name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">City / Town</label>
+          <input type="text" class="form-input" placeholder="e.g. Kingston or London">
+        </div>
+        <div class="form-group">
+          <label class="form-label">State / County / Parish</label>
+          <input type="text" class="form-input" placeholder="e.g. St. Andrew or Greater London">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ZIP / Postal Code</label>
+          <input type="text" class="form-input" placeholder="e.g. W1A 1AA, KGN 10, or 00000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Country / Destination</label>
+          <select id="checkout-country" class="form-input" style="height: 38px; cursor: pointer;" onchange="updateCartUI()">
+            <option value="GB">United Kingdom (UK)</option>
+            <option value="US">United States (USA)</option>
+            <option value="CA">Canada</option>
+            <option value="JM">Jamaica</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="ROW">Rest of the World</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="checkout-summary">
+        <h3>Order Summary</h3>
+        <div id="checkout-items">
+          </div>
+        <hr style="border:0; border-top:1px solid var(--color-border-tertiary); margin:15px 0;">
+        
+        <div class="cart-row">
+          <span>Subtotal</span>
+          <span id="checkout-subtotal">£0.00</span>
+        </div>
+        <div class="cart-row">
+          <span>Concierge Fee</span>
+          <span>£25.00</span>
+        </div>
+        <div class="cart-row">
+          <span>Secure Packaging</span>
+          <span>£20.00</span>
+        </div>
+        <div class="cart-row">
+          <span>Shipping Est.</span>
+          <span id="checkout-shipping">£0.00</span>
+        </div>
+        
+        <hr style="border:0; border-top:1px solid var(--color-border-tertiary); margin:15px 0;">
+        <div class="cart-row" style="font-size:1.2rem; font-weight:bold;">
+          <span>Total</span>
+          <span id="checkout-total">£0.00</span>
+        </div>
+        <button class="btn-green" style="width:100%; margin-top:20px; padding:12px; font-size:1rem;" onclick="payNow()">
+          Pay Securely via Stripe
+        </button>
       </div>
     </div>
   </div>
@@ -1358,7 +1373,33 @@
     { id: 28, name: "Grace Baked Beans", price: 1.99, cat: "food", img: "images/grace-bake-beans-400g_940x.png" },
     { id: 29, name: "National Water Crackers", price: 2.49, cat: "food", img: "images/water-crackers.png" },
     { id: 30, name: "Andrews Salt Sachets", price: 2.99, cat: "food", img: "images/andrews-original-salt-satchets.png" },
-    { id: 31, name: "Nestle Condensed Milk", price: 3.99, cat: "food", img: "images/betty-condensed-milk.png" }
+    { id: 31, name: "Nestle Condensed Milk", price: 3.99, cat: "food", img: "images/betty-condensed-milk.png" },
+    { id: 32, name: "Benjamins Vanilla", price: 3.99, cat: "food", img: "images/benjamins-vanilla-240ml_1000x.png" },
+    { id: 33, name: "Grace Butter Beans", price: 3.99, cat: "food", img: "images/grace-butter-bean-640x.png" },
+    { id: 34, name: "Blue Mountain Instant Coffee", price: 3.99, cat: "food", img: "images/blue-mountain-peak-instant-coffee.png" },
+    { id: 35, name: "Coconut Milk Powder", price: 3.99, cat: "food", img: "images/caribbean-dreams-coconut-milk-powder.png" },
+    { id: 36, name: "Cheese Krunchies", price: 3.99, cat: "food", img: "images/cheese-krunchies-1880x.png" },
+    { id: 37, name: "Excelsior Cream Crackers", price: 3.99, cat: "food", img: "images/excelsior-cream-crackers.png" },
+    { id: 38, name: "Foska Oats", price: 3.99, cat: "food", img: "images/foska.oats.png" },
+    { id: 39, name: "Gold Seal Butter", price: 3.99, cat: "food", img: "images/gold-seal-margarine.png" },
+    { id: 40, name: "Grace All Purpose Seasoning", price: 3.99, cat: "food", img: "images/grace-all-purpose-seasoning.png" },
+    { id: 41, name: "Grace Callaloo", price: 3.99, cat: "food", img: "images/grace-callaloo-540g.png" },
+    { id: 42, name: "Grace Chicken Flavored Mix", price: 3.99, cat: "food", img: "images/grace-chicken-flavored-mix-1270x.png" },
+    { id: 43, name: "Grace Chicken Sausage", price: 3.99, cat: "food", img: "images/grace-chicken-sausage.png" },
+    { id: 44, name: "Grace Chicken Vienna Sausage (Hot)", price: 3.99, cat: "food", img: "images/grace-chicken-vienna-sausages-hot-420x.png" },
+    { id: 45, name: "Grace Coconut Milk Powder", price: 3.99, cat: "food", img: "images/grace-coconut-milk-powder.png" },
+    { id: 46, name: "Grace Coconut Milk", price: 3.99, cat: "food", img: "images/grace-coconut-milk.png" },
+    { id: 47, name: "Grace Condensed Milk", price: 3.99, cat: "food", img: "images/grace-condensed-milk-397g.png" },
+    { id: 48, name: "Grace Fish Flavour Soup Mix", price: 3.99, cat: "food", img: "images/grace-fish-flavour-soup-mix.png" },
+    { id: 49, name: "Grace Hot & Spicy Mackerel", price: 3.99, cat: "food", img: "images/grace-mackerel-hot-and-spicy-5.50z.png"},
+    { id: 50, name: "Grace Mackerel in Tomato Sauce", price: 3.99, cat: "food", img: "images/grace-mackerel-in-tomato-sauce.png" },
+    { id: 51, name: "Grace Plaintain Chips", price: 3.99, cat: "food", img: "images/grace-plaintain-chips.png" },
+    { id: 52, name: "Grace Pumpkin Soup Mix", price: 3.99, cat: "food", img: "images/grace-pumpkin-soup-mix-370x.png" },
+    { id: 53, name: "Guava Jelly", price: 3.99, cat: "food", img: "images/guava-jelly.png" },
+    { id: 54, name: "Jackass Corn", price: 3.99, cat: "food", img: "images/island-choice-jackass-corn.png" },
+    { id: 55, name: "Coco Bread", price: 3.99, cat: "food", img: "images/jamaican-yasyee-coco-bread.png" },
+    { id: 56, name: "Juici Beef Patties", price: 3.99, cat: "food", img: "images/juici-beef-patties.png" },
+    { id: 57, name: "Slicied Breakfruit", price: 3.99, cat: "food", img: "images/sliced-breadfruit.png" },
   ];
 
   // =========================================================================
@@ -1509,6 +1550,7 @@ function updateCartUI() {
     const emptyEl = document.getElementById('cart-empty');
     const checkoutItems = document.getElementById('checkout-items');
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
+    const checkoutShipping = document.getElementById('checkout-shipping');
     const checkoutTotal = document.getElementById('checkout-total');
 
     if (!list || !totalEl || !countEl) return;
@@ -1561,6 +1603,7 @@ function updateCartUI() {
       });
     });
 
+    // Handle Checkout Panel Aggregations Safely
     if (checkoutItems && checkoutSubtotal && checkoutTotal) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
@@ -1571,7 +1614,7 @@ function updateCartUI() {
 
       checkoutSubtotal.textContent = '£' + total.toFixed(2);
 
-      // Determine dynamic courier shipping estimates by country field
+      // Determine dynamic courier shipping pricing structures based on country selection
       const countrySelect = document.getElementById('checkout-country');
       const selectedCountry = countrySelect ? countrySelect.value : 'GB';
       
@@ -1581,18 +1624,15 @@ function updateCartUI() {
         else if (selectedCountry === 'US' || selectedCountry === 'CA') shippingCost = 35.00;
         else if (selectedCountry === 'JM') shippingCost = 15.00;
         else if (selectedCountry === 'DE' || selectedCountry === 'FR') shippingCost = 18.50;
-        else shippingCost = 45.00; // Rest of world standard fallback
+        else shippingCost = 45.00; 
       }
 
-      // Update the real shipping visual indicator row in your summary
-      const checkoutSummaryRows = checkoutItems.parentElement.querySelectorAll('.cart-row');
-      checkoutSummaryRows.forEach(row => {
-        if (row.textContent.includes('Shipping')) {
-          row.innerHTML = `<span>Shipping (${selectedCountry})</span><span>£${shippingCost.toFixed(2)}</span>`;
-        }
-      });
+      // Safe DOM check for the shipping container label display
+      if (checkoutShipping) {
+        checkoutShipping.textContent = '£' + shippingCost.toFixed(2);
+      }
 
-      const concierge = 30;
+      const concierge = 25;
       const packaging = 20;
       const grandTotal = total + concierge + packaging + shippingCost;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
