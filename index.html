@@ -115,6 +115,7 @@
       background: #ffffff;
       padding: 1rem;
       border-bottom: 1px solid #eee;
+      gap: 10px;
     }
 
     .mobile-menu.open {
@@ -1188,9 +1189,9 @@
         </div>
 
         <div class="cart-summary">
-          <p><strong>Subtotal:</strong> £<span id="cart-subtotal">0.00</span></p>
+          <p><strong>Subtotal:</strong> <span id="cart-subtotal">£0.00</span></p>
           <p><strong>Shipping:</strong> Calculated at checkout</p>
-          <p><strong>Total:</strong> £<span id="cart-total">0.00</span></p>
+          <p><strong>Total:</strong> <span id="cart-total">£0.00</span></p>
           <button class="btn-green" style="margin-top:20px;" onclick="showPage('checkout')">
             Proceed to Checkout &rarr;
           </button>
@@ -1338,9 +1339,13 @@
   // PAGE NAVIGATION
   // =========================
   function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
     const target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active');
+    if (target) target.classList.add('active-page');
+
+    // Automatically close mobile dropdown menu when any menu link is clicked
+    const menu = document.getElementById('mobileMenu');
+    if (menu) menu.classList.remove('open');
   }
 
   function toggleMenu() {
@@ -1439,7 +1444,9 @@
   function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
+    const subtotalEl = document.getElementById('cart-subtotal');
     const countEl = document.getElementById('cart-count');
+    const emptyEl = document.getElementById('cart-empty');
     const checkoutItems = document.getElementById('checkout-items');
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
     const checkoutTotal = document.getElementById('checkout-total');
@@ -1449,19 +1456,29 @@
     list.innerHTML = '';
     let total = 0;
 
+    if (cart.length === 0) {
+      if (emptyEl) emptyEl.style.display = 'block';
+    } else {
+      if (emptyEl) emptyEl.style.display = 'none';
+    }
+
     cart.forEach((item, index) => {
       total += item.price;
       const li = document.createElement('li');
       li.className = 'cart-item';
       li.innerHTML = `
-        <span>${item.name}</span>
-        <span>£${item.price.toFixed(2)}</span>
-        <button class="remove-from-cart" data-index="${index}">×</button>
+        <img src="${item.img}" alt="${item.name}">
+        <div class="cart-item-details">
+          <h4>${item.name}</h4>
+          <p>£${item.price.toFixed(2)}</p>
+          <button class="remove-btn remove-from-cart" data-index="${index}">Remove</button>
+        </div>
       `;
       list.appendChild(li);
     });
 
     totalEl.textContent = '£' + total.toFixed(2);
+    if (subtotalEl) subtotalEl.textContent = '£' + total.toFixed(2);
     countEl.textContent = cart.length.toString();
 
     list.querySelectorAll('.remove-from-cart').forEach(btn => {
@@ -1471,7 +1488,7 @@
       });
     });
 
-    // Checkout summary
+    // Checkout summary integration
     if (checkoutItems && checkoutSubtotal && checkoutTotal) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
@@ -1505,6 +1522,18 @@
     } catch (e) {}
 
     renderRecentlyViewed();
+  }
+
+  // Helper placeholder for arbitrary text additions
+  function addToCartName(name, price) {
+    const matchingProd = products.find(p => p.name.toLowerCase() === name.toLowerCase());
+    if (matchingProd) {
+      addToCart(matchingProd.id);
+    } else {
+      cart.push({ id: Date.now(), name: name, price: price, img: "https://via.placeholder.com/300?text=" + encodeURIComponent(name) });
+      updateCartUI();
+      showToast("Added to basket");
+    }
   }
 
   function loadRecentlyViewedFromStorage() {
