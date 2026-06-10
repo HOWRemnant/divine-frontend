@@ -1429,35 +1429,19 @@
   // =========================
   // CART
   // =========================
-  // =========================================================================
-  // UPDATED CART SYSTEM (HANDLES MULTIPLE QUANTITIES TOGETHER WITH +/- BUTTONS)
-  // =========================================================================
   function addToCart(id) {
     const product = products.find(p => p.id === id);
     if (!product || product.out) return;
 
-    // Check if the item is already in the basket
-    const existingItem = cart.find(item => item.id === id);
-    if (existingItem) {
-      existingItem.quantity += 1; // Increase quantity instead of adding a new row
-    } else {
-      cart.push({ ...product, quantity: 1 }); // Add new item with a starting quantity of 1
-    }
-
+    cart.push({ ...product });
     updateCartUI();
     showToast("Added to basket");
     addToRecentlyViewed(product);
   }
 
   function addToCartName(name, price) {
-    // For custom or static items, we use the name to look for duplicates
-    const existingItem = cart.find(item => item.name === name);
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      const customItem = { id: Date.now(), name: name, price: price, img: 'images/logo1.PNG', quantity: 1 };
-      cart.push(customItem);
-    }
+    const customItem = { id: Date.now(), name: name, price: price, img: 'images/logo1.PNG' };
+    cart.push(customItem);
     updateCartUI();
     showToast("Added to basket");
   }
@@ -1465,17 +1449,6 @@
   function removeFromCart(index) {
     if (index < 0 || index >= cart.length) return;
     cart.splice(index, 1);
-    updateCartUI();
-  }
-
-  // NEW FUNCTION: Handles changing numbers when pressing + / - or typing a number
-  function updateQuantity(index, newQty) {
-    newQty = parseInt(newQty, 10);
-    if (isNaN(newQty) || newQty <= 0) {
-      removeFromCart(index); // If quantity drops to 0 or lower, completely remove item
-      return;
-    }
-    cart[index].quantity = newQty;
     updateCartUI();
   }
 
@@ -1493,7 +1466,6 @@
 
     list.innerHTML = '';
     let total = 0;
-    let totalItemsCount = 0; // Tracks overall quantity (e.g., 2 buns + 1 cheese = 3 total items)
 
     if (cart.length === 0) {
       if (emptyEl) emptyEl.style.display = 'block';
@@ -1502,28 +1474,15 @@
     }
 
     cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-      totalItemsCount += item.quantity;
-
+      total += item.price;
       const li = document.createElement('li');
       li.className = 'cart-item';
       li.innerHTML = `
         <img src="${item.img}" alt="${item.name}">
         <div class="cart-item-details">
           <h4>${item.name}</h4>
-          <p>£${item.price.toFixed(2)} each</p>
-          
-          <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${item.quantity - 1})">-</button>
-            <input type="number" value="${item.quantity}" min="1" style="width: 45px; text-align: center; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" onchange="updateQuantity(${index}, this.value)">
-            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${item.quantity + 1})">+</button>
-          </div>
-
-          <button class="remove-btn remove-from-cart" data-index="${index}">Remove entirely</button>
-        </div>
-        <div style="font-weight: bold; margin-left: auto;">
-          £${itemTotal.toFixed(2)}
+          <p>£${item.price.toFixed(2)}</p>
+          <button class="remove-btn remove-from-cart" data-index="${index}">Remove</button>
         </div>
       `;
       list.appendChild(li);
@@ -1531,7 +1490,7 @@
 
     totalEl.textContent = total.toFixed(2);
     if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
-    countEl.textContent = totalItemsCount.toString(); // Updates green navbar bag badge correctly
+    countEl.textContent = cart.length.toString();
 
     list.querySelectorAll('.remove-from-cart').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1540,12 +1499,12 @@
       });
     });
 
-    // Checkout Page Summary Layout updates
+    // Checkout Summary update
     if (checkoutItems && checkoutSubtotal && checkoutTotal) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
-          <span>${item.name} (x${item.quantity})</span>
-          <span>£${(item.price * item.quantity).toFixed(2)}</span>
+          <span>${item.name}</span>
+          <span>£${item.price.toFixed(2)}</span>
         </div>
       `).join('');
 
@@ -1556,6 +1515,7 @@
       const grandTotal = total + concierge + packaging;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
+  }
 
   // =========================
   // RECENTLY VIEWED
