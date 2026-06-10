@@ -427,14 +427,12 @@
       }
     }
 
-    /* REDUCED SHOP PRODUCT IMAGES */
     .product-card img {
-      width: auto;
-      max-width: 100%;
-      height: 120px;
+      width: 100%;
+      height: 180px;
       object-fit: contain;
       background-color: #fff;
-      padding: 5px;
+      padding: 10px;
       border-radius: 8px;
       display: block;
       margin: 0 auto;
@@ -495,10 +493,9 @@
       margin-bottom: 12px;
     }
 
-    /* REDUCED BASKET CARDS IMAGES */
     .cart-item img {
-      width: 50px;
-      height: 50px;
+      width: 70px;
+      height: 70px;
       object-fit: contain;
       border-radius: 6px;
       background: #fafafa;
@@ -771,11 +768,9 @@
       cursor: pointer;
     }
 
-    /* REDUCED RECENTLY VIEWED IMAGES */
     .recent-item img {
-      width: auto;
-      max-width: 100%;
-      height: 80px;
+      width: 100%;
+      height: 120px;
       object-fit: contain;
       margin-bottom: 8px;
     }
@@ -1343,9 +1338,9 @@
   // PAGE NAVIGATION
   // =========================
   function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active-page');
+    if (target) target.classList.add('active');
   }
 
   function toggleMenu() {
@@ -1436,8 +1431,13 @@
   }
 
   function addToCartName(name, price) {
-    const item = { id: Date.now(), name: name, price: price, img: "https://via.placeholder.com/300?text=" + encodeURIComponent(name) };
-    cart.push(item);
+    const customItem = {
+      id: Date.now(), // safe temporary unique ID
+      name: name,
+      price: price,
+      img: "https://via.placeholder.com/300?text=" + encodeURIComponent(name)
+    };
+    cart.push(customItem);
     updateCartUI();
     showToast("Added to basket");
   }
@@ -1455,17 +1455,15 @@
     const checkoutItems = document.getElementById('checkout-items');
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
     const checkoutTotal = document.getElementById('checkout-total');
-    const cartEmpty = document.getElementById('cart-empty');
 
     if (!list || !totalEl || !countEl) return;
 
     list.innerHTML = '';
     let total = 0;
 
-    if (cart.length === 0) {
-      if (cartEmpty) cartEmpty.style.display = 'block';
-    } else {
-      if (cartEmpty) cartEmpty.style.display = 'none';
+    const emptyEl = document.getElementById('cart-empty');
+    if (emptyEl) {
+      emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
     }
 
     cart.forEach((item, index) => {
@@ -1473,11 +1471,11 @@
       const li = document.createElement('li');
       li.className = 'cart-item';
       li.innerHTML = `
-        <img src="${item.img}" alt="${item.name}">
+        <img src="${item.img || 'https://via.placeholder.com/70'}" alt="${item.name}">
         <div class="cart-item-details">
           <h4>${item.name}</h4>
           <p>£${item.price.toFixed(2)}</p>
-          <button class="remove-from-cart remove-btn" data-index="${index}">×</button>
+          <button class="remove-btn remove-from-cart" data-index="${index}">Remove</button>
         </div>
       `;
       list.appendChild(li);
@@ -1596,6 +1594,7 @@
   });
 </script>
 
+<div id="toast" class="toast"></div>
 <div id="requestSent" class="request-sent">Request sent! We’re on it.</div>
 
 </body>
