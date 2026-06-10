@@ -1631,11 +1631,20 @@
   // INITIALIZATION
   // =========================
   document.addEventListener('DOMContentLoaded', () => {
+    // 1. Ensure the cart array is completely empty or properly structured on load
+    cart = []; 
+    
+    // 2. Render out your products list
     renderProducts(products);
+    
+    // 3. Load recently viewed items safely
     loadRecentlyViewedFromStorage();
     renderRecentlyViewed();
+    
+    // 4. Update the UI safely
     updateCartUI();
 
+    // 5. Setup search input listener
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
       searchInput.addEventListener('input', handleSearch);
