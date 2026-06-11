@@ -1648,6 +1648,7 @@
   let cart = [];
   let recentlyViewed = [];
   let globalShippingCost = 0.00; 
+  let currentShopPage = 'jamaica'; // Instantiated as default state
 
   // =========================================================================
   // 3. NAVIGATION MANAGEMENT
@@ -1682,7 +1683,7 @@
   // =========================================================================
   function renderProducts(list) {
     const grid = document.getElementById('products-grid');
-    if (!grid) return; // Skips safely if no grid exists on this page layout
+    if (!grid) return;
 
     grid.innerHTML = list.map(p => {
       const out = p.out === true;
@@ -1720,20 +1721,6 @@
     });
 
     renderProducts(filtered);
-  }
-
-  function handleSearch() {
-    const activeBtn = document.querySelector('.category-bar .cat-btn.active');
-    const cat = activeBtn ? activeBtn.textContent.toLowerCase() : 'all';
-
-    let catKey = 'all';
-    if (cat.includes('staples')) catKey = 'food';
-    else if (cat.includes('sauces')) catKey = 'sauce';
-    else if (cat.includes('drinks')) catKey = 'drink';
-    else if (cat.includes('sweets')) catKey = 'sweet';
-    else if (cat.includes('personal')) catKey = 'personal';
-
-    filterCat(catKey, activeBtn);
   }
 
   // =========================================================================
@@ -1794,10 +1781,6 @@
     updateCartUI();
   }
 
-// NEW GLOBAL VARIABLE: Track which shop mode the user is actively viewing
-  // Make sure your menu buttons set this! (e.g., clicking "JM Shop" sets currentShopPage = 'jamaica')
-  let currentShopPage = 'uk-to-ja'; 
-
   function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
@@ -1813,12 +1796,9 @@
 
     let total = 0;
     let totalItemsCount = 0;
-    let groceryItemsTotal = 0;
     
     let hasBoxOrBarrel = false;
-    let isDoorToDoor = false;
 
-    // Evaluate basket content loops
     cart.forEach((item) => {
       const qty = item.quantity || 1;
       const itemTotal = item.price * qty;
@@ -1827,11 +1807,6 @@
 
       if (item.name.includes("Box (") || item.name.includes("Barrel (")) {
         hasBoxOrBarrel = true;
-        if (item.name.toLowerCase().includes("door")) {
-          isDoorToDoor = true;
-        }
-      } else {
-        groceryItemsTotal += itemTotal;
       }
     });
 
@@ -1839,9 +1814,7 @@
     if (totalEl) totalEl.textContent = total.toFixed(2);
     if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
 
-    if (emptyEl) {
-      emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
-    }
+    if (emptyEl) emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
 
     if (list) {
       list.innerHTML = cart.map((item, index) => {
@@ -1879,16 +1852,13 @@
     // DYNAMIC REGIONAL SHIPPING RULES
     const countrySelect = document.getElementById('checkout-country');
     const selectedCountry = countrySelect ? countrySelect.value : 'US';
-    
     let finalShippingCost = 0;
     
-    // Clear old layout error messages
     if (validationErrorEl) {
       validationErrorEl.style.display = 'none';
       validationErrorEl.innerHTML = '';
     }
 
-    // RULE 1: If user is in Jamaica, block them ONLY if they are shopping the local Jamaica Shop page
     if (selectedCountry === 'JM') {
       if (currentShopPage === 'jamaica') {
         if (validationErrorEl) {
@@ -1896,26 +1866,19 @@
           validationErrorEl.innerHTML = '⚠️ Access Denied: Local residents living in Jamaica cannot buy local goods from the "JM Shop" page. Please head over to our "UK to JA" page to shop for imported items instead!';
         }
       }
-      // If they are on the UK to JA page, shipping costs track the global container assignments
       finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
 
     } else if (selectedCountry === 'GB') {
-      // Local UK shipping rule
-      finalShippingCost = 5.99;
+      finalShippingCost = currentShopPage === 'uk-to-ja' ? (globalShippingCost > 0 ? globalShippingCost : 35.00) : 5.99;
 
     } else {
-      // US, CA, DE, FR, ROW (World Customers)
       if (currentShopPage === 'uk-to-ja') {
-        // If they are on the UK to JA page, they MUST choose a cargo container box size
         finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 35.00;
-        
         if (!hasBoxOrBarrel && cart.length > 0 && validationErrorEl) {
           validationErrorEl.style.display = 'block';
-          validationErrorEl.innerHTML = '📦 Container Needed: World customers utilizing our UK-to-JA shipping options must choose a box container layout size from Step 2.';
+          validationErrorEl.innerHTML = '📦 Container Needed: Customers utilizing our UK-to-JA shipping options must choose a box container layout size from Step 2.';
         }
       } else {
-        // If World customers are shopping the Jamaica Shop (exporting items out of JM to their homes abroad)
-        // Standard international courier express weights estimate
         finalShippingCost = 28.50; 
       }
     }
@@ -1931,7 +1894,6 @@
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
 
-    // Display customs processing warning for incoming shipments destined to Jamaica
     const disclaimerEl = document.getElementById('customs-disclaimer');
     if (disclaimerEl) {
       disclaimerEl.style.display = (selectedCountry === 'JM' || currentShopPage === 'uk-to-ja') ? 'block' : 'none';
@@ -1947,28 +1909,26 @@
 
     const countrySelect = document.getElementById('checkout-country');
     const selectedCountry = countrySelect ? countrySelect.value : 'US';
+    const hasBox = cart.some(item => item.name.includes("Box (") || item.name.includes("Barrel ("));
     
-    // Enforce Rule: Stop local buyers from using the local JM grocery shop page
+    // Stop local Jamaica residents from using the Jamaica Export shop
     if (selectedCountry === 'JM' && currentShopPage === 'jamaica') {
       alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page.");
       return;
     }
 
-    // Enforce Rule: World customers ordering from UK-to-JA require a container item
-    if (selectedCountry !== 'GB' && currentShopPage === 'uk-to-ja') {
-      const hasBox = cart.some(item => item.name.includes("Box (") || item.name.includes("Barrel ("));
-      if (!hasBox) {
-        alert("Please choose an overseas container box specification layout before continuing your checkout order!");
-        showPage('shop');
-        return;
-      }
+    // Force container for any international shipment going down the UK to JA pipeline
+    if (currentShopPage === 'uk-to-ja' && !hasBox) {
+      alert("Please choose an overseas container box specification layout before continuing your checkout order!");
+      showPage('shop');
+      return;
     }
 
     showToast("Redirecting to secure Stripe Checkout...");
     const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
     setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
   }
-  
+
   // =========================================================================
   // 8. RECENTLY VIEWED LOGIC
   // =========================================================================
@@ -2011,7 +1971,7 @@
   }
 
   // =========================================================================
-  // 9. CONCIERGE FLOW & CHECKOUT
+  // 9. CONCIERGE FLOW
   // =========================================================================
   function sendPrompt(text) {
     if (!text || !text.trim()) {
@@ -2019,16 +1979,6 @@
       return;
     }
     showToast("Request sent to concierge.");
-  }
-
-  function payNow() {
-    if (cart.length === 0) {
-      showToast("Your basket is empty.");
-      return;
-    }
-    showToast("Redirecting to secure Stripe Checkout...");
-    const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
-    setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
   }
 
   // =========================================================================
@@ -2043,6 +1993,12 @@
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
       searchInput.addEventListener('input', handleSearch);
+    }
+
+    // Bind event listener to calculation updates when country shifts
+    const countrySel = document.getElementById('checkout-country');
+    if (countrySel) {
+      countrySel.addEventListener('change', updateCartUI);
     }
   });
 </script>
