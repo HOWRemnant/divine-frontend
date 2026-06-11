@@ -1187,12 +1187,13 @@
     </div>
   </div>
 
-  <div id="page-uk" class="page">
+<div id="page-uk" class="page">
     <div class="uk-banner">
       🇬🇧 UK → Jamaica — We source UK products and ship them home to your family
     </div>
+    
     <div class="section uk-section">
-      <div class="section-title">Choose your delivery method</div>
+      <div class="section-title">Step 1: Choose your delivery method</div>
       <div class="shipping-options" style="margin-top:1rem;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
         <div class="shipping-card featured">
           <div class="ship-title">
@@ -1218,19 +1219,83 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section uk-section" style="border-top: 1px solid #eee; padding-top: 2rem;">
+      <div class="section-title">Step 2: Choose your Shipping Container / Box</div>
+      <div class="section-sub" style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 1.5rem;">Select a container or box size to add to your cargo load</div>
+      
+      <div class="shipping-options" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));">
+        
+        <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">📦 Small Shipping Box</div>
+            <div style="font-size: 13px; color: #666; margin: 4px 0;">Size: 18" x 18" x 18"</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
+              Perfect for smaller custom orders, single duvets, toiletries, clothing, and small gifts.
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£35.00</div>
+            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Small Shipping Box (18x18x18)', 35.00)">Add box to basket</button>
+          </div>
+        </div>
+
+        <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">📦 Medium Shipping Box</div>
+            <div style="font-size: 13px; color: #666; margin: 4px 0;">Size: 18" x 18" x 24"</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
+              Ideal for a mix of non-perishable groceries, washing powders, and basic family essentials.
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£55.00</div>
+            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Medium Shipping Box (18x18x24)', 55.00)">Add box to basket</button>
+          </div>
+        </div>
+
+        <div class="shipping-card featured" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">📦 Large Shipping Box <span class="ship-badge">Best Value</span></div>
+            <div style="font-size: 13px; color: #666; margin: 4px 0;">Size: 24" x 24" x 24"</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
+              Our most popular square box. Holds a substantial family grocery shop alongside bedroom and home goods.
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£75.00</div>
+            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Large Shipping Box (24x24x24)', 75.00)">Add box to basket</button>
+          </div>
+        </div>
+
+        <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">🛢️ Jumbo Plastic Barrel</div>
+            <div style="font-size: 13px; color: #666; margin: 4px 0;">Capacity: 220 Litres</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
+              The ultimate traditional Caribbean shipping option. Maximum protection for massive, heavy bulk orders.
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£120.00</div>
+            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Jumbo 220L Shipping Barrel', 120.00)">Add barrel to basket</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section" style="border-top: 1px solid #eee; padding-top: 2rem;">
       <div class="section-header">
         <div>
-          <div class="section-title">Popular UK items to send home</div>
-          <div class="section-sub">Or request anything specific — we'll source it</div>
+          <div class="section-title">Step 3: Add popular UK items to fill your container</div>
+          <div class="section-sub">Or request anything specific below — we'll source it</div>
         </div>
       </div>
-  <div class="products-grid">
-    
-<!-- Item 1: Dax Wave & Groom -->
+      <div class="products-grid">
+        
         <div class="product-card">
           <div class="product-image-container">
-            <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=300" alt="Dax Wave & Groom" class="product-img">
+            <img src="images/dax.jpg" alt="Dax Wave & Groom" class="product-img">
           </div>
           <div class="product-info">
             <h3>Dax Wave & Groom</h3>
@@ -1239,7 +1304,6 @@
           </div>
         </div>
 
-    <!-- Item 2: Cadbury Chocolate Box -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/cadbury.png" alt="Cadbury Chocolate Box" class="product-img">
@@ -1251,7 +1315,6 @@
           </div>
         </div>
 
-    <!-- Item 3: Winter/All-Season Duvet -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/duvet.png" alt="UK Quality Duvet Quilt" class="product-img">
@@ -1263,7 +1326,6 @@
           </div>
         </div>
 
-    <!-- Item 4: Daz Washing Powder -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/daz.png" alt="Laundry Detergent Box" class="product-img">
@@ -1275,7 +1337,6 @@
           </div>
         </div>
 
-    <!-- Item 4: Ariel Washing Powder -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/ariel-washing-powder.png" alt="Ariel Washing Powder" class="product-img">
@@ -1287,7 +1348,6 @@
           </div>
         </div>
 
-    <!-- Item 5: Fabric Softener -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/comfort-softner.png" alt="Fabric Softener Bottle" class="product-img">
@@ -1299,7 +1359,6 @@
           </div>
         </div>
 
-    <!-- Item 6: Large Container Nuts -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/planters-cashew-nuts.png" alt="Large Mixed Nuts Jar" class="product-img">
@@ -1311,7 +1370,6 @@
           </div>
         </div>
 
-    <!-- Item 7: Heinz Baked Beans Multipack -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="images/Heinz-baked-beans.png" alt="Canned Baked Beans" class="product-img">
@@ -1323,7 +1381,6 @@
           </div>
         </div>
 
-<!-- Item 8: Luxury Cotton Bed Sheets & Towels -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=300" alt="UK Luxury Bedding Sheets" class="product-img">
@@ -1335,7 +1392,6 @@
           </div>
         </div>
 
-<!-- Item 9: Branded Trainers (Sourced) -->
         <div class="product-card">
           <div class="product-image-container">
             <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="Branded Trainers" class="product-img">
@@ -1408,7 +1464,6 @@
       </div>
     </div>
   </div>
-
   <div id="page-signin" class="page">
     <div class="section">
       <div class="signin-overlay">
