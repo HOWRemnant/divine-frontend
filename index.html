@@ -1603,7 +1603,7 @@
     { id: 26, name: "Inhaler", price: 6.99, cat: "personal", img: "images/inhaler.png" },
     { id: 27, name: "Castile Olive Oil Soap", price: 3.49, cat: "personal", img: "images/castile-olive-oil-soap-640x.png" },
 
-    // EXTRA ITEMS TO REACH 45
+    // EXTRA ITEMS TO REACH 45+
     { id: 28, name: "Grace Baked Beans", price: 1.99, cat: "food", img: "images/grace-bake-beans-400g_940x.png" },
     { id: 29, name: "National Water Crackers", price: 2.49, cat: "food", img: "images/water-crackers.png" },
     { id: 30, name: "Andrews Salt Sachets", price: 2.99, cat: "food", img: "images/andrews-original-salt-satchets.png" },
@@ -1617,7 +1617,7 @@
     { id: 38, name: "Foska Oats", price: 3.99, cat: "food", img: "images/foska-oats.png" },
     { id: 39, name: "Gold Seal Butter", price: 3.99, cat: "food", img: "images/gold-seal-margarine.png" },
     { id: 40, name: "Grace All Purpose Seasoning", price: 3.99, cat: "food", img: "images/grace-all-purpose-seasoning.png" },
-    { id: 41, name: "Grace Callaloo", price: 3.99, cat: "food", img: "images/grace-callaloo-540g.png" },
+    { id: 41, name: "Grace Callaloo Duplicate", price: 3.99, cat: "food", img: "images/grace-callaloo-540g.png" },
     { id: 42, name: "Grace Chicken Flavored Mix", price: 3.99, cat: "food", img: "images/grace-chicken-flavored-mix-1270x.png" },
     { id: 43, name: "Grace Chicken Sausage", price: 3.99, cat: "food", img: "images/grace-chicken-sausage.png" },
     { id: 44, name: "Grace Chicken Vienna Sausage (Hot)", price: 3.99, cat: "food", img: "images/grace-chicken-vienna-sausages-hot-420x.png" },
@@ -1633,20 +1633,18 @@
     { id: 54, name: "Jackass Corn", price: 3.99, cat: "food", img: "images/island-choice-jackass-corn.png" },
     { id: 55, name: "Coco Bread", price: 3.99, cat: "food", img: "images/jamaican-tastee-coco-bread.png" },
     { id: 56, name: "Juici Beef Patties", price: 3.99, cat: "food", img: "images/juici-beef-patties.png" },
-    { id: 57, name: "Sliced Breadfruit", price: 3.99, cat: "food", img: "images/sliced-breadfruit.png" },
+    { id: 57, name: "Sliced Breadfruit", price: 3.99, cat: "food", img: "images/sliced-breadfruit.png" }
   ];
 
   // =========================================================================
-  // 2. STATE
+  // 2. STATE MANAGEMENT
   // =========================================================================
   let cart = [];
   let recentlyViewed = [];
-  
-  // NEW SYSTEM STATE: Track the container shipping cost globally
   let globalShippingCost = 0.00; 
 
   // =========================================================================
-  // 3. PAGE NAVIGATION
+  // 3. NAVIGATION MANAGEMENT
   // =========================================================================
   function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
@@ -1674,11 +1672,11 @@
   }
 
   // =========================================================================
-  // 5. PRODUCT RENDERING
+  // 5. PRODUCT RENDERING Engine
   // =========================================================================
   function renderProducts(list) {
     const grid = document.getElementById('products-grid');
-    if (!grid) return;
+    if (!grid) return; // Skips safely if no grid exists on this page layout
 
     grid.innerHTML = list.map(p => {
       const out = p.out === true;
@@ -1699,7 +1697,7 @@
   }
 
   // =========================================================================
-  // 6. FILTERING & SEARCH (SCOPED TO PREVENT BUTTON CONFLICTS)
+  // 6. FILTERING & SEARCH
   // =========================================================================
   function filterCat(cat, btn) {
     if (btn) {
@@ -1733,7 +1731,7 @@
   }
 
   // =========================================================================
-  // 7. UNIFIED QUANTITY CART SYSTEM (DOUBLES AS DETAILED PRICING ENGINE)
+  // 7. SECURED QUANTITY CART CALCULATION SYSTEM
   // =========================================================================
   function addToCart(id) {
     const product = products.find(p => p.id === id);
@@ -1767,21 +1765,15 @@
 
   function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
     globalShippingCost = parseFloat(calculatedShipping);
-    
-    // Wipe matching duplicates so they never get billed for two boxes simultaneously
     cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
-
-    // Pipe directly into initialization sequence
     addToCartName(boxTypeName, boxCost, boxImagePath);
   }
 
   function removeFromCart(index) {
     if (index < 0 || index >= cart.length) return;
-    
     if (cart[index].name.includes("Box (") || cart[index].name.includes("Barrel (")) {
       globalShippingCost = 0.00;
     }
-
     cart.splice(index, 1);
     updateCartUI();
   }
@@ -1802,29 +1794,20 @@
     const subtotalEl = document.getElementById('cart-subtotal');
     const countEl = document.getElementById('cart-count');
     const emptyEl = document.getElementById('cart-empty');
+    
     const checkoutItems = document.getElementById('checkout-items');
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
     const checkoutShipping = document.getElementById('checkout-shipping');
     const checkoutTotal = document.getElementById('checkout-total');
 
-    // SAFE GUARD: If basic layout elements are missing, break early gracefully without stopping the script
-    if (!list || !totalEl || !countEl) return;
-
-    list.innerHTML = '';
     let total = 0;
     let totalItemsCount = 0;
-    
     let containerBaseCost = 0;
     let groceryItemsTotal = 0;
     let hasDoorToDoor = false;
 
-    if (cart.length === 0) {
-      if (emptyEl) emptyEl.style.display = 'block';
-    } else {
-      if (emptyEl) emptyEl.style.display = 'none';
-    }
-
-    cart.forEach((item, index) => {
+    // Build values loop cleanly
+    cart.forEach((item) => {
       const qty = item.quantity || 1;
       const itemTotal = item.price * qty;
       total += itemTotal;
@@ -1838,40 +1821,40 @@
       } else {
         groceryItemsTotal += itemTotal;
       }
-
-      const li = document.createElement('li');
-      li.className = 'cart-item';
-      li.innerHTML = `
-        <img src="${item.img}" alt="${item.name}">
-        <div class="cart-item-details">
-          <h4>${item.name}</h4>
-          <p>£${item.price.toFixed(2)} each</p>
-          <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${qty - 1})">-</button>
-            <input type="number" value="${qty}" min="1" style="width: 45px; text-align: center; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" onchange="updateQuantity(${index}, this.value)">
-            <button class="cat-btn" style="padding: 2px 10px; margin: 0; font-weight: bold;" onclick="updateQuantity(${index}, ${qty + 1})">+</button>
-          </div>
-          <button class="remove-btn remove-from-cart" data-index="${index}">Remove entirely</button>
-        </div>
-        <div style="font-weight: bold; margin-left: auto;">
-          £${itemTotal.toFixed(2)}
-        </div>
-      `;
-      list.appendChild(li);
     });
 
-    totalEl.textContent = total.toFixed(2);
+    // Updaters safely guarded with Optional Chaining (?.) to block freeze crashes
+    if (countEl) countEl.textContent = totalItemsCount.toString();
+    if (totalEl) totalEl.textContent = total.toFixed(2);
     if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
-    countEl.textContent = totalItemsCount.toString();
 
-    list.querySelectorAll('.remove-from-cart').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const i = parseInt(btn.getAttribute('data-index'), 10);
-        removeFromCart(i);
-      });
-    });
+    if (emptyEl) {
+      emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
+    }
 
-    // Handle Checkout Panel Calculations Safely with Optional Chaining (Prevents Crashes!)
+    if (list) {
+      list.innerHTML = cart.map((item, index) => {
+        const qty = item.quantity || 1;
+        return `
+          <li class="cart-item">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="cart-item-details">
+              <h4>${item.name}</h4>
+              <p>£${item.price.toFixed(2)} each</p>
+              <div style="margin-top:8px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <button class="cat-btn" style="padding:2px 10px; margin:0; font-weight:bold;" onclick="updateQuantity(${index}, ${qty - 1})">-</button>
+                <input type="number" value="${qty}" min="1" style="width:45px; text-align:center; padding:4px; border:1px solid #ccc; border-radius:4px;" onchange="updateQuantity(${index}, this.value)">
+                <button class="cat-btn" style="padding:2px 10px; margin:0; font-weight:bold;" onclick="updateQuantity(${index}, ${qty + 1})">+</button>
+              </div>
+              <button class="remove-btn" onclick="removeFromCart(${index})">Remove entirely</button>
+            </div>
+            <div style="font-weight:bold; margin-left:auto;">£${(item.price * qty).toFixed(2)}</div>
+          </li>
+        `;
+      }).join('');
+    }
+
+    // Process Checkout components safely
     if (checkoutItems) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
@@ -1881,9 +1864,7 @@
       `).join('');
     }
 
-    if (checkoutSubtotal) {
-      checkoutSubtotal.textContent = '£' + groceryItemsTotal.toFixed(2);
-    }
+    if (checkoutSubtotal) checkoutSubtotal.textContent = '£' + groceryItemsTotal.toFixed(2);
 
     const countrySelect = document.getElementById('checkout-country');
     const selectedCountry = countrySelect ? countrySelect.value : 'GB';
@@ -1903,17 +1884,13 @@
       }
     }
 
-    if (checkoutShipping) {
-      checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
-    }
+    if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
 
     const concierge = 25;
     const packaging = containerBaseCost > 0 ? containerBaseCost : 0;
     
     const packagingEl = document.getElementById('summary-packaging-cost');
-    if (packagingEl) {
-       packagingEl.textContent = '£' + packaging.toFixed(2);
-    }
+    if (packagingEl) packagingEl.textContent = '£' + packaging.toFixed(2);
 
     if (checkoutTotal) {
       const grandTotal = groceryItemsTotal + concierge + packaging + finalShippingCost;
@@ -1922,41 +1899,27 @@
 
     const disclaimerEl = document.getElementById('customs-disclaimer');
     if (disclaimerEl) {
-      if (selectedCountry === 'JM' && hasDoorToDoor) {
-        disclaimerEl.style.display = 'block';
-      } else {
-        disclaimerEl.style.display = 'none';
-      }
+      disclaimerEl.style.display = (selectedCountry === 'JM' && hasDoorToDoor) ? 'block' : 'none';
     }
   }
   
   // =========================================================================
-  // 8. RECENTLY VIEWED
+  // 8. RECENTLY VIEWED LOGIC
   // =========================================================================
   function addToRecentlyViewed(product) {
     const existingIndex = recentlyViewed.findIndex(p => p.id === product.id);
-    if (existingIndex !== -1) {
-      recentlyViewed.splice(existingIndex, 1);
-    }
+    if (existingIndex !== -1) recentlyViewed.splice(existingIndex, 1);
     recentlyViewed.unshift({ id: product.id, name: product.name, img: product.img, price: product.price });
     if (recentlyViewed.length > 10) recentlyViewed.pop();
-
-    try {
-      localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
-    } catch (e) {}
-
+    try { localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed)); } catch (e) {}
     renderRecentlyViewed();
   }
 
   function loadRecentlyViewedFromStorage() {
     try {
       const stored = localStorage.getItem('recentlyViewed');
-      if (stored) {
-        recentlyViewed = JSON.parse(stored);
-      }
-    } catch (e) {
-      recentlyViewed = [];
-    }
+      if (stored) recentlyViewed = JSON.parse(stored);
+    } catch (e) { recentlyViewed = []; }
   }
 
   function renderRecentlyViewed() {
@@ -1982,7 +1945,7 @@
   }
 
   // =========================================================================
-  // 9. CONCIERGE REQUEST & DIRECT STRIPE PAYMENT LINK FLOW
+  // 9. CONCIERGE FLOW & CHECKOUT
   // =========================================================================
   function sendPrompt(text) {
     if (!text || !text.trim()) {
@@ -1997,13 +1960,9 @@
       showToast("Your basket is empty.");
       return;
     }
-
     showToast("Redirecting to secure Stripe Checkout...");
     const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
-
-    setTimeout(() => {
-      window.open(stripePaymentLink, '_blank');
-    }, 1000);
+    setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
   }
 
   // =========================================================================
