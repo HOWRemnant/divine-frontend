@@ -1116,6 +1116,12 @@
 
 <!-- CHECKOUT PAGE -->
 <div id="page-checkout" class="page">
+    <div style="max-width: 1200px; margin: 0 auto 15px auto; padding: 0 20px; text-align: left;">
+      <a href="#" onclick="showPage('shop'); return false;" style="text-decoration: none; color: #2e7d32; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
+        ← Back to Shop / Amend Basket
+      </a>
+    </div>
+
     <div class="checkout-container">
       <div class="checkout-form">
         <h3>Shipping Address</h3>
@@ -1788,7 +1794,7 @@
     updateCartUI();
   }
 
-  function updateCartUI() {
+function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
     const subtotalEl = document.getElementById('cart-subtotal');
@@ -1802,7 +1808,6 @@
 
     let total = 0;
     let totalItemsCount = 0;
-    let containerBaseCost = 0;
     let groceryItemsTotal = 0;
     let hasDoorToDoor = false;
 
@@ -1813,8 +1818,8 @@
       total += itemTotal;
       totalItemsCount += qty;
 
+      // Track if cargo type dictates unique notification properties
       if (item.name.includes("Box (") || item.name.includes("Barrel (")) {
-        containerBaseCost += itemTotal;
         if (item.name.toLowerCase().includes("door")) {
           hasDoorToDoor = true;
         }
@@ -1864,7 +1869,8 @@
       `).join('');
     }
 
-    if (checkoutSubtotal) checkoutSubtotal.textContent = '£' + groceryItemsTotal.toFixed(2);
+    // Subtotal accurately tracks the complete basket contents row items combined
+    if (checkoutSubtotal) checkoutSubtotal.textContent = '£' + total.toFixed(2);
 
     const countrySelect = document.getElementById('checkout-country');
     const selectedCountry = countrySelect ? countrySelect.value : 'GB';
@@ -1887,13 +1893,13 @@
     if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
 
     const concierge = 25;
-    const packaging = containerBaseCost > 0 ? containerBaseCost : 0;
     
+    // Set this line detail strictly to 0.00 since the baseline container price is already included in the item subtotal above!
     const packagingEl = document.getElementById('summary-packaging-cost');
-    if (packagingEl) packagingEl.textContent = '£' + packaging.toFixed(2);
+    if (packagingEl) packagingEl.textContent = '£0.00';
 
     if (checkoutTotal) {
-      const grandTotal = groceryItemsTotal + concierge + packaging + finalShippingCost;
+      const grandTotal = total + concierge + finalShippingCost;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
 
