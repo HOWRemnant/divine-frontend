@@ -1909,26 +1909,28 @@
 
     const countrySelect = document.getElementById('checkout-country');
     const selectedCountry = countrySelect ? countrySelect.value : 'US';
+    const hasBox = cart.some(item => item.name.includes("Box (") || item.name.includes("Barrel ("));
     
-    // Smoother, case-insensitive check for any box or barrel item in the cart
-    const hasBox = cart.some(item => {
-      const nameLower = item.name.toLowerCase();
-      return nameLower.includes("box") || nameLower.includes("barrel");
-    });
-    
-    // Stop local Jamaica residents from using the Jamaica Export shop
+    // RULE 1: Stop local Jamaica residents from buying local export items
     if (selectedCountry === 'JM' && currentShopPage === 'jamaica') {
-      alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page.");
+      alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page to order imported goods!");
       return;
     }
 
-    // Force container for any international shipment going down the UK to JA pipeline
+    // RULE 2: Stop UK residents from ordering UK import items to a UK address
+    if (selectedCountry === 'GB' && currentShopPage === 'uk-to-ja') {
+      alert("Error: Residents in the United Kingdom cannot order from the UK to Jamaica shop page for domestic delivery. This service is strictly for shipping goods into Jamaica!");
+      return;
+    }
+
+    // RULE 3: Force a cargo container box for anyone else using the UK to JA pipeline (e.g. US/CA sending gifts to JA)
     if (currentShopPage === 'uk-to-ja' && !hasBox) {
       alert("Please choose an overseas container box specification layout before continuing your checkout order!");
       showPage('shop');
       return;
     }
 
+    // If they pass all regional blocks, proceed to Stripe
     showToast("Redirecting to secure Stripe Checkout...");
     const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
     setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
