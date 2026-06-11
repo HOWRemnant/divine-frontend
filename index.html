@@ -1751,7 +1751,6 @@
     addToRecentlyViewed(product);
   }
 
-  // FIXED: Accepts custom parameters cleanly to safely push images and structures
   function addToCartName(name, price, imagePath) {
     const existingItem = cart.find(item => item.name === name);
     const finalImg = imagePath ? imagePath : 'images/logo1.PNG';
@@ -1766,7 +1765,6 @@
     showToast("Added to basket");
   }
 
-  // HANDLES BOX CONFIGURATIONS AND PRICING CALCULATIONS DYNAMICALLY
   function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
     globalShippingCost = parseFloat(calculatedShipping);
     
@@ -1809,13 +1807,13 @@
     const checkoutShipping = document.getElementById('checkout-shipping');
     const checkoutTotal = document.getElementById('checkout-total');
 
+    // SAFE GUARD: If basic layout elements are missing, break early gracefully without stopping the script
     if (!list || !totalEl || !countEl) return;
 
     list.innerHTML = '';
     let total = 0;
     let totalItemsCount = 0;
     
-    // Keep track of any container base box price inside the basket array
     let containerBaseCost = 0;
     let groceryItemsTotal = 0;
     let hasDoorToDoor = false;
@@ -1832,7 +1830,6 @@
       total += itemTotal;
       totalItemsCount += qty;
 
-      // Extract details if it's our chosen container type
       if (item.name.includes("Box (") || item.name.includes("Barrel (")) {
         containerBaseCost += itemTotal;
         if (item.name.toLowerCase().includes("door")) {
@@ -1874,65 +1871,61 @@
       });
     });
 
-    // Handle Checkout Panel Calculations and Layout Structure
-    if (checkoutItems && checkoutSubtotal && checkoutTotal) {
+    // Handle Checkout Panel Calculations Safely with Optional Chaining (Prevents Crashes!)
+    if (checkoutItems) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
           <span>${item.name} (x${item.quantity || 1})</span>
           <span>£${(item.price * (item.quantity || 1)).toFixed(2)}</span>
         </div>
       `).join('');
+    }
 
-      // Items Subtotal represents only groceries/products loaded
+    if (checkoutSubtotal) {
       checkoutSubtotal.textContent = '£' + groceryItemsTotal.toFixed(2);
+    }
 
-      // Determine active shipping calculations matching customer locations
-      const countrySelect = document.getElementById('checkout-country');
-      const selectedCountry = countrySelect ? countrySelect.value : 'GB';
-      
-      let finalShippingCost = 0;
-      if (cart.length > 0) {
-        if (selectedCountry === 'JM') {
-          // Fall back to baseline estimate minimum if no specific selection container exists yet
-          finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
-        } else if (selectedCountry === 'GB') {
-          finalShippingCost = 5.99;
-        } else if (selectedCountry === 'US' || selectedCountry === 'CA') {
-          finalShippingCost = 35.00;
-        } else if (selectedCountry === 'DE' || selectedCountry === 'FR') {
-          finalShippingCost = 18.50;
-        } else {
-          finalShippingCost = 45.00; 
-        }
+    const countrySelect = document.getElementById('checkout-country');
+    const selectedCountry = countrySelect ? countrySelect.value : 'GB';
+    
+    let finalShippingCost = 0;
+    if (cart.length > 0) {
+      if (selectedCountry === 'JM') {
+        finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
+      } else if (selectedCountry === 'GB') {
+        finalShippingCost = 5.99;
+      } else if (selectedCountry === 'US' || selectedCountry === 'CA') {
+        finalShippingCost = 35.00;
+      } else if (selectedCountry === 'DE' || selectedCountry === 'FR') {
+        finalShippingCost = 18.50;
+      } else {
+        finalShippingCost = 45.00; 
       }
+    }
 
-      if (checkoutShipping) {
-        checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
-      }
+    if (checkoutShipping) {
+      checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
+    }
 
-      // Explicit, separate line metrics configuration
-      const concierge = 25;
-      
-      // Override the standard placeholder value with the true container size value
-      const packaging = containerBaseCost > 0 ? containerBaseCost : 0;
-      
-      // Dynamic rendering safely updates targeted labels inside checkout panels
-      const packagingEl = document.getElementById('summary-packaging-cost');
-      if (packagingEl) {
-         packagingEl.textContent = '£' + packaging.toFixed(2);
-      }
+    const concierge = 25;
+    const packaging = containerBaseCost > 0 ? containerBaseCost : 0;
+    
+    const packagingEl = document.getElementById('summary-packaging-cost');
+    if (packagingEl) {
+       packagingEl.textContent = '£' + packaging.toFixed(2);
+    }
 
+    if (checkoutTotal) {
       const grandTotal = groceryItemsTotal + concierge + packaging + finalShippingCost;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
+    }
 
-      // AUTOMATED CHECKSUM DISCLAIMER: Reveal warnings if Door-to-Door parameters are active
-      const disclaimerEl = document.getElementById('customs-disclaimer');
-      if (disclaimerEl) {
-        if (selectedCountry === 'JM' && hasDoorToDoor) {
-          disclaimerEl.style.display = 'block';
-        } else {
-          disclaimerEl.style.display = 'none';
-        }
+    const disclaimerEl = document.getElementById('customs-disclaimer');
+    if (disclaimerEl) {
+      if (selectedCountry === 'JM' && hasDoorToDoor) {
+        disclaimerEl.style.display = 'block';
+      } else {
+        disclaimerEl.style.display = 'none';
       }
     }
   }
