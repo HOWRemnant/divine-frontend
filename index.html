@@ -1782,7 +1782,7 @@ function addToCartName(name, price, imagePath) {
 
 function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
   globalShippingCost = parseFloat(calculatedShipping);
-  // STEP 1 FIX: Cleanly strip out any pre-existing box/barrel containers to prevent duplication
+  // Cleanly strip out any pre-existing box/barrel containers to prevent duplication
   cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
   addToCartName(boxTypeName, boxCost, boxImagePath);
 }
@@ -1831,9 +1831,6 @@ function updateCartUI() {
   let total = 0;
   let totalItemsCount = 0;
   let hasBoxOrBarrel = false;
-
-  // STEP 1 FIX: Filter out container boxes from the rolling list breakdown if they are calculated dynamically below
-  const nonBoxCartItems = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
 
   cart.forEach((item) => {
     const qty = item.quantity || 1;
@@ -1920,6 +1917,108 @@ function updateCartUI() {
       finalShippingCost = 28.50; 
     }
   }
+
+  if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
+
+  // ==========================================
+  // DYNAMIC CONTAINER INJECTION ENGINE
+  // ==========================================
+  const wrapper = document.getElementById('container-options-wrapper');
+  const note = document.getElementById('container-delivery-note');
+  
+  if (wrapper && note) {
+    let ratesToUse = internationalRates;
+    
+    if (selectedCountry === 'JM' || currentShopPage === 'jamaica') {
+        ratesToUse = jamaicaRates;
+        note.innerHTML = "Rates include secure warehouse packaging and <strong>Door-to-Door</strong> freight delivery to Jamaica.";
+        if (!lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'jm_small';
+    } else {
+        note.innerHTML = "Choose your container box size and preferred freight delivery pipeline.";
+        if (lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'wharf_small';
+    }
+
+    // JAMAICA-WORLD ENFORCER: Filter out Wharf Options completely if shopping on Jamaica page
+    const filteredRates = ratesToUse.filter(opt => {
+      if (currentShopPage === 'jamaica' && opt.label.toLowerCase().includes('wharf')) {
+        return false; 
+      }
+      return true;
+    });
+
+    // Make sure the active selection doesn't default to a hidden Wharf radio box
+    const fallbackBox = filteredRates.length > 0 ? filteredRates[0].id : '';
+    const hasValidSelection = filteredRates.some(opt => opt.id === lastSelectedBoxId);
+    if (!hasValidSelection && fallbackBox) {
+      lastSelectedBoxId = fallbackBox;
+    }
+
+    wrapper.innerHTML = filteredRates.map(opt => {
+        const isChecked = (opt.id === lastSelectedBoxId) ? 'checked' : '';
+        return `
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; padding: 4px 0;">
+            <input type="radio" name="shipping_box" value="${opt.id}" data-price="${opt.price.toFixed(2)}" ${isChecked} onchange="handleBoxChange()" style="transform: scale(1.1); accent-color: #2e7d32;">
+            <span><strong>${opt.label}</strong> — £${opt.price.toFixed(2)}</span>
+          </label>
+        `;
+    }).join('');
+  }
+
+  // Capture dynamic selection element to calculate totals securely
+  const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
+  const containerCost = selectedBoxElement ? parseFloat(selectedBoxElement.getAttribute('data-price')) : 0.00;
+
+  const concierge = 25;
+  const packagingEl = document.getElementById('summary-packaging-cost');
+  if (packagingEl) packagingEl.textContent = '£' + containerCost.toFixed(2);
+
+  if (checkoutTotal) {
+    const baseCartTotal = hasBoxOrBarrel ? (total - containerCost) : total;
+    const grandTotal = Math.max(0, baseCartTotal) + concierge + finalShippingCost + containerCost;
+    checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
+  }
+
+  const disclaimerEl = document.getElementById('customs-disclaimer');
+  if (disclaimerEl) {
+    disclaimerEl.style.display = (selectedCountry === 'JM' || currentShopPage === 'uk-to-ja') ? 'block' : 'none';
+  }
+}
+
+// GATEWAY ORDER SUBMISSION ENFORCER
+function payNow() {
+  if (cart.length === 0) {
+    showToast("Your basket is empty.");
+    return;
+  }
+
+  const countrySelect = document.getElementById('checkout-country');
+  const selectedCountry = countrySelect ? countrySelect.value : 'US';
+  const hasBox = cart.some(item => item.name.includes("Box (") || item.name.includes("Barrel ("));
+  
+  // RULE 1: Stop local Jamaica residents from buying local export items
+  if (selectedCountry === 'JM' && currentShopPage === 'jamaica') {
+    alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page to order imported goods!");
+    return;
+  }
+
+  // RULE 2: Stop UK residents from ordering UK import items to a UK address
+  if (selectedCountry === 'GB' && currentShopPage === 'uk-to-ja') {
+    alert("Error: Residents in the United Kingdom cannot order from the UK to Jamaica shop page for domestic delivery. This service is strictly for shipping goods into Jamaica!");
+    return;
+  }
+
+  // RULE 3: Force a cargo container box for anyone else using the UK to JA pipeline
+  if (currentShopPage === 'uk-to-ja' && !hasBox) {
+    alert("Please choose an overseas container box specification layout before continuing your checkout order!");
+    showPage('shop');
+    return;
+  }
+
+  // If they pass all regional blocks, proceed to Stripe
+  showToast("Redirecting to secure Stripe Checkout...");
+  const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
+  setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
+}
 
   if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
 
