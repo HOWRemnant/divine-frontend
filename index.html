@@ -2030,23 +2030,7 @@
   // =========================================================================
   // 8. RECENTLY VIEWED LOGIC
   // =========================================================================
-  function addToRecentlyViewed(product) {
-    const existingIndex = recentlyViewed.findIndex(p => p.id === product.id);
-    if (existingIndex !== -1) recentlyViewed.splice(existingIndex, 1);
-    recentlyViewed.unshift({ id: product.id, name: product.name, img: product.img, price: product.price });
-    if (recentlyViewed.length > 10) recentlyViewed.pop();
-    try { localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed)); } catch (e) {}
-    renderRecentlyViewed();
-  }
-
-  function loadRecentlyViewedFromStorage() {
-    try {
-      const stored = localStorage.getItem('recentlyViewed');
-      if (stored) recentlyViewed = JSON.parse(stored);
-    } catch (e) { recentlyViewed = []; }
-  }
-
-  // FORCEFUL ORDER CORRECTION SYSTEM
+  // FORCEFUL ORDER CORRECTION SYSTEM (UPDATED)
   function renderRecentlyViewed() {
     const section = document.getElementById('recently-viewed-section');
     const container = document.getElementById('recently-viewed');
@@ -2068,21 +2052,21 @@
       </div>
     `).join('');
 
-    // Locate parent layout container profile wrapper
-    const targetParent = document.getElementById('page-account') || section.parentElement;
+    // Safe domestic container targeting inside page-account
+    const targetParent = document.getElementById('page-account');
     if (targetParent) {
-      // 1. Locate your Sign-In card elements box safely
-      const loginCard = targetParent.querySelector('.auth-card') || targetParent.querySelector('div[style*="max-width: 450px"]') || targetParent.firstElementChild;
+      // 1. Find the clear, distinct Sign-In card wrapper element
+      const loginCard = targetParent.querySelector('.auth-card') || 
+                        targetParent.querySelector('div[style*="max-width"]') ||
+                        targetParent.firstElementChild;
       
       if (loginCard && loginCard !== section) {
-        // Force the Login form layout block to the absolute top position first
-        targetParent.insertBefore(loginCard, targetParent.firstChild);
+        // 2. Insert the recently viewed grid right AFTER the sign-in card,
+        // which naturally pushes it safely ABOVE your footer layout element.
+        loginCard.parentNode.insertBefore(section, loginCard.nextSibling);
       }
-      // 2. Force the recently viewed strip beneath everything else at the bottom
-      targetParent.appendChild(section);
     }
   }
-
   // =========================================================================
   // 9. CONCIERGE FLOW
   // =========================================================================
