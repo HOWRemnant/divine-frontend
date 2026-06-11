@@ -1900,7 +1900,7 @@
     }
   }
 
-  // GATEWAY ORDER SUBMISSION ENFORCER
+// GATEWAY ORDER SUBMISSION ENFORCER
   function payNow() {
     if (cart.length === 0) {
       showToast("Your basket is empty.");
@@ -1909,7 +1909,12 @@
 
     const countrySelect = document.getElementById('checkout-country');
     const selectedCountry = countrySelect ? countrySelect.value : 'US';
-    const hasBox = cart.some(item => item.name.includes("Box (") || item.name.includes("Barrel ("));
+    
+    // Smoother, case-insensitive check for any box or barrel item in the cart
+    const hasBox = cart.some(item => {
+      const nameLower = item.name.toLowerCase();
+      return nameLower.includes("box") || nameLower.includes("barrel");
+    });
     
     // Stop local Jamaica residents from using the Jamaica Export shop
     if (selectedCountry === 'JM' && currentShopPage === 'jamaica') {
