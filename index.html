@@ -920,11 +920,11 @@
         </div>
       </div>
 
-      <div class="nav-links">
+<div class="nav-links">
         <button class="nav-link" onclick="showPage('home')">Home</button>
         <button class="nav-link" onclick="showPage('about')">About</button>
-        <button class="nav-link" onclick="showPage('shop')">🇯🇲 Shop</button>
-        <button class="nav-link" onclick="showPage('uk')">🇬🇧 UK to JA</button>
+        <button class="nav-link" onclick="currentShopPage = 'jamaica'; showPage('shop')">🇯🇲 Shop</button>
+        <button class="nav-link" onclick="currentShopPage = 'uk-to-ja'; showPage('shop')">🇬🇧 UK to JA</button>
         <button class="nav-link" onclick="showPage('track')">Track</button>
         <button class="nav-link" onclick="showPage('checkout')">Checkout</button>
       </div>
@@ -945,8 +945,8 @@
     <div id="mobileMenu" class="mobile-menu">
       <button class="nav-link" onclick="showPage('home')">Home</button>
       <button class="nav-link" onclick="showPage('about')">About</button>
-      <button class="nav-link" onclick="showPage('shop')">🇯🇲 Shop</button>
-      <button class="nav-link" onclick="showPage('uk')">🇬🇧 UK to JA</button>
+      <button class="nav-link" onclick="currentShopPage = 'jamaica'; showPage('shop')">🇯🇲 Shop</button>
+      <button class="nav-link" onclick="currentShopPage = 'uk-to-ja'; showPage('shop')">🇬🇧 UK to JA</button>
       <button class="nav-link" onclick="showPage('track')">Track</button>
       <button class="nav-link" onclick="showPage('signin')">Sign in</button>
       <button class="nav-link" onclick="showPage('cart')">Basket</button>
