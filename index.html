@@ -1219,68 +1219,156 @@
       </div>
     </div>
 
-    <div class="section uk-section" style="border-top: 1px solid #eee; padding-top: 2rem;">
-      <div class="section-title">Step 2: Choose your Shipping Container / Box</div>
-      <div class="section-sub" style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 1.5rem;">Select a container or box size to add to your cargo load</div>
+   <div class="section uk-section" style="border-top: 1px solid #eee; padding-top: 2rem;">
+      <div class="section-title">Step 2: Choose your Shipping Container & Delivery Method</div>
+      <div class="section-sub" style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 1.5rem;">Select your size and choose between Home Delivery or Wharf Pickup.</div>
       
-      <div class="shipping-options" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));">
+      <div class="shipping-options" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
         
         <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <div class="ship-title" style="font-size: 18px;">📦 Small Shipping Box</div>
-            <div style="font-size: 13px; color: #666; margin: 4px 0;">Size: 18" x 18" x 18"</div>
-            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
-              Perfect for smaller custom orders, single duvets, toiletries, clothing, and small gifts.
-            </div>
+            <div class="ship-title" style="font-size: 18px;">📦 Small Box (18" x 18" x 18")</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Perfect for smaller custom orders, single duvets, and toiletries.</div>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£35.00</div>
-            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Small Shipping Box (18x18x18)', 35.00)">Add box to basket</button>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Small Box (Door to Door)', 35.00, 65.00, 'images/small-box.png')">
+              Add: Door-to-Door (£65 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Small Box (Wharf Pickup)', 35.00, 30.00, 'images/small-box.png')">
+              Add: Wharf Collection (£30 Shipping)
+            </button>
           </div>
         </div>
 
         <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <div class="ship-title" style="font-size: 18px;">📦 Medium Shipping Box</div>
-            <div style="font-size: 13px; color: #666; margin: 4px 0;">Size: 18" x 18" x 24"</div>
-            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
-              Ideal for a mix of non-perishable groceries, washing powders, and basic family essentials.
-            </div>
+            <div class="ship-title" style="font-size: 18px;">📦 Medium Box (18" x 18" x 24")</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Ideal for a mix of non-perishable groceries and washing powders.</div>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£55.00</div>
-            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Medium Shipping Box (18x18x24)', 55.00)">Add box to basket</button>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Medium Box (Door to Door)', 55.00, 95.00, 'images/medium-box.png')">
+              Add: Door-to-Door (£95 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Medium Box (Wharf Pickup)', 55.00, 45.00, 'images/medium-box.png')">
+              Add: Wharf Collection (£45 Shipping)
+            </button>
           </div>
         </div>
 
         <div class="shipping-card featured" style="display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <div class="ship-title" style="font-size: 18px;">📦 Large Shipping Box <span class="ship-badge">Best Value</span></div>
-            <div style="font-size: 13px; color: #666; margin: 4px 0;">Size: 24" x 24" x 24"</div>
-            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
-              Our most popular square box. Holds a substantial family grocery shop alongside bedroom and home goods.
-            </div>
+            <div class="ship-title" style="font-size: 18px;">📦 Large Box (24" x 24" x 24") <span class="ship-badge">Best Value</span></div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Holds a substantial family grocery shop alongside home goods.</div>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£75.00</div>
-            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Large Shipping Box (24x24x24)', 75.00)">Add box to basket</button>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Large Box (Door to Door)', 75.00, 140.00, 'images/large-box.png')">
+              Add: Door-to-Door (£140 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Large Box (Wharf Pickup)', 75.00, 70.00, 'images/large-box.png')">
+              Add: Wharf Collection (£70 Shipping)
+            </button>
           </div>
         </div>
 
         <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <div class="ship-title" style="font-size: 18px;">🛢️ Jumbo Plastic Barrel</div>
-            <div style="font-size: 13px; color: #666; margin: 4px 0;">Capacity: 220 Litres</div>
-            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">
-              The ultimate traditional Caribbean shipping option. Maximum protection for massive, heavy bulk orders.
-            </div>
+            <div class="ship-title" style="font-size: 18px;">🛢️ Jumbo Plastic Barrel (220L)</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Traditional choice. Maximum protection for massive, heavy bulk orders.</div>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: bold; color: #1a5c1a; margin: 12px 0 6px 0;">£120.00</div>
-            <button class="btn-green" style="width: 100%;" onclick="addToCartName('Jumbo 220L Shipping Barrel', 120.00)">Add barrel to basket</button>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Jumbo Barrel (Door to Door)', 120.00, 190.00, 'images/barrel.png')">
+              Add: Door-to-Door (£190 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Jumbo Barrel (Wharf Pickup)', 120.00, 99.00, 'images/barrel.png')">
+              Add: Wharf Collection (£99 Shipping)
+            </button>
           </div>
         </div>
 
+      </div>
+    </div>
+
+ <div class="section uk-section" style="border-top: 1px solid #eee; padding-top: 2rem;">
+      <div class="section-title">Step 2: Choose your Shipping Container & Delivery Method</div>
+      <div class="section-sub" style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 1.5rem;">Select your size and choose between Home Delivery or Wharf Pickup.</div>
+      
+      <div class="shipping-options" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+        
+        <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">📦 Small Box (18" x 18" x 18")</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Perfect for smaller custom orders, single duvets, and toiletries.</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Small Box (Door to Door)', 35.00, 65.00, 'images/small-box.png')">
+              Add: Door-to-Door (£65 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Small Box (Wharf Pickup)', 35.00, 30.00, 'images/small-box.png')">
+              Add: Wharf Collection (£30 Shipping)
+            </button>
+          </div>
+        </div>
+
+        <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">📦 Medium Box (18" x 18" x 24")</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Ideal for a mix of non-perishable groceries and washing powders.</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Medium Box (Door to Door)', 55.00, 95.00, 'images/medium-box.png')">
+              Add: Door-to-Door (£95 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Medium Box (Wharf Pickup)', 55.00, 45.00, 'images/medium-box.png')">
+              Add: Wharf Collection (£45 Shipping)
+            </button>
+          </div>
+        </div>
+
+        <div class="shipping-card featured" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">📦 Large Box (24" x 24" x 24") <span class="ship-badge">Best Value</span></div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Holds a substantial family grocery shop alongside home goods.</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Large Box (Door to Door)', 75.00, 140.00, 'images/large-box.png')">
+              Add: Door-to-Door (£140 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Large Box (Wharf Pickup)', 75.00, 70.00, 'images/large-box.png')">
+              Add: Wharf Collection (£70 Shipping)
+            </button>
+          </div>
+        </div>
+
+        <div class="shipping-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="ship-title" style="font-size: 18px;">🛢️ Jumbo Plastic Barrel (220L)</div>
+            <div class="ship-desc" style="margin-top:6px; font-size: 13px;">Traditional choice. Maximum protection for bulk orders.</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <button class="btn-green" style="width: 100%; margin-bottom: 5px; font-size: 12px;" 
+                    onclick="addCargoToCart('Jumbo Barrel (Door to Door)', 120.00, 190.00, 'images/barrel.png')">
+              Add: Door-to-Door (£190 Shipping)
+            </button>
+            <button class="btn-green" style="width: 100%; font-size: 12px; background-color: #444;" 
+                    onclick="addCargoToCart('Jumbo Barrel (Wharf Pickup)', 120.00, 99.00, 'images/barrel.png')">
+              Add: Wharf Collection (£99 Shipping)
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1300,7 +1388,7 @@
           <div class="product-info">
             <h3>Dax Wave & Groom</h3>
             <div class="product-price">£4.50</div>
-            <button class="btn-green" onclick="addToCartName('Dax Wave & Groom', 4.50)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Dax Wave & Groom', 4.50, 'images/dax.jpg')">Add to basket</button>
           </div>
         </div>
 
@@ -1311,7 +1399,7 @@
           <div class="product-info">
             <h3>Cadbury Chocolate Box</h3>
             <div class="product-price">£8.00</div>
-            <button class="btn-green" onclick="addToCartName('Cadbury Box', 8.00)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Cadbury Box', 8.00, 'images/cadbury.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1322,7 +1410,7 @@
           <div class="product-info">
             <h3>Premium UK Duvet (Quilt)</h3>
             <div class="product-price">£18.50</div>
-            <button class="btn-green" onclick="addToCartName('Premium Duvet', 18.50)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Premium Duvet', 18.50, 'images/duvet.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1333,7 +1421,7 @@
           <div class="product-info">
             <h3>Daz Laundry Powder (Big Box)</h3>
             <div class="product-price">£11.00</div>
-            <button class="btn-green" onclick="addToCartName('Daz Powder Box', 11.00)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Daz Powder Box', 11.00, 'images/daz.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1344,7 +1432,7 @@
           <div class="product-info">
             <h3>Ariel Original Box Soap</h3>
             <div class="product-price">£14.00</div>
-            <button class="btn-green" onclick="addToCartName('Ariel Box Soap', 14.00)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Ariel Box Soap', 14.00, 'images/ariel-washing-powder.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1355,7 +1443,7 @@
           <div class="product-info">
             <h3>Fabric Softener (Mega Bottle)</h3>
             <div class="product-price">£5.50</div>
-            <button class="btn-green" onclick="addToCartName('Fabric Softener', 5.50)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Fabric Softener', 5.50, 'images/comfort-softner.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1366,7 +1454,7 @@
           <div class="product-info">
             <h3>Large Nut Jars (Cashew/Almond)</h3>
             <div class="product-price">£9.50</div>
-            <button class="btn-green" onclick="addToCartName('Large Nuts Tub', 9.50)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Large Nuts Tub', 9.50, 'images/planters-cashew-nuts.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1377,7 +1465,7 @@
           <div class="product-info">
             <h3>Heinz Baked Beans (4-Pack)</h3>
             <div class="product-price">£4.50</div>
-            <button class="btn-green" onclick="addToCartName('Heinz Beans 4pk', 4.50)">Add to basket</button>
+            <button class="btn-green" onclick="addToCartName('Heinz Beans 4pk', 4.50, 'images/Heinz-baked-beans.png')">Add to basket</button>
           </div>
         </div>
 
@@ -1612,7 +1700,7 @@
     { id: 54, name: "Jackass Corn", price: 3.99, cat: "food", img: "images/island-choice-jackass-corn.png" },
     { id: 55, name: "Coco Bread", price: 3.99, cat: "food", img: "images/jamaican-tastee-coco-bread.png" },
     { id: 56, name: "Juici Beef Patties", price: 3.99, cat: "food", img: "images/juici-beef-patties.png" },
-    { id: 57, name: "Slicied Breakfruit", price: 3.99, cat: "food", img: "images/sliced-breadfruit.png" },
+    { id: 57, name: "Sliced Breadfruit", price: 3.99, cat: "food", img: "images/sliced-breadfruit.png" },
   ];
 
   // =========================================================================
@@ -1620,6 +1708,9 @@
   // =========================================================================
   let cart = [];
   let recentlyViewed = [];
+  
+  // NEW SYSTEM STATE: Track the container shipping cost globally
+  let globalShippingCost = 0.00; 
 
   // =========================================================================
   // 3. PAGE NAVIGATION
@@ -1709,7 +1800,7 @@
   }
 
   // =========================================================================
-  // 7. UNIFIED QUANTITY CART SYSTEM
+  // 7. UNIFIED QUANTITY CART SYSTEM (UPDATED TO HANDLE PASSED IMAGES)
   // =========================================================================
   function addToCart(id) {
     const product = products.find(p => p.id === id);
@@ -1727,20 +1818,42 @@
     addToRecentlyViewed(product);
   }
 
-  function addToCartName(name, price) {
+  // FIXED: Accepts a custom image path parameter so your basket doesn't break
+  function addToCartName(name, price, imagePath) {
     const existingItem = cart.find(item => item.name === name);
+    // Use the image path if provided, fallback to the default company logo
+    const finalImg = imagePath ? imagePath : 'images/logo1.PNG';
+
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      const customItem = { id: Date.now(), name: name, price: price, img: 'images/logo1.PNG', quantity: 1 };
+      const customItem = { id: Date.now(), name: name, price: price, img: finalImg, quantity: 1 };
       cart.push(customItem);
     }
     updateCartUI();
     showToast("Added to basket");
   }
 
+  // NEW FUNCTION: Handles Box + Dynamic Shipping Method Calculation
+  function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
+    // 1. Assign the real dynamic shipping rate based on button pressed
+    globalShippingCost = parseFloat(calculatedShipping);
+    
+    // 2. Clear out any older container box options already in the cart so they don't buy two boxes by accident
+    cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
+
+    // 3. Add the selected container to the basket
+    addToCartName(boxTypeName, boxCost, boxImagePath);
+  }
+
   function removeFromCart(index) {
     if (index < 0 || index >= cart.length) return;
+    
+    // Reset global shipping if they remove the cargo container item entirely
+    if (cart[index].name.includes("Box (") || cart[index].name.includes("Barrel (")) {
+      globalShippingCost = 0.00;
+    }
+
     cart.splice(index, 1);
     updateCartUI();
   }
@@ -1755,7 +1868,7 @@
     updateCartUI();
   }
 
-function updateCartUI() {
+  function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
     const subtotalEl = document.getElementById('cart-subtotal');
@@ -1827,30 +1940,39 @@ function updateCartUI() {
 
       checkoutSubtotal.textContent = '£' + total.toFixed(2);
 
-      // Determine dynamic courier shipping pricing structures based on country selection
+      // Determine Base Shipping Structures
       const countrySelect = document.getElementById('checkout-country');
       const selectedCountry = countrySelect ? countrySelect.value : 'GB';
       
-      let shippingCost = 0;
+      let finalShippingCost = 0;
       if (cart.length > 0) {
-        if (selectedCountry === 'GB') shippingCost = 5.99;
-        else if (selectedCountry === 'US' || selectedCountry === 'CA') shippingCost = 35.00;
-        else if (selectedCountry === 'JM') shippingCost = 15.00;
-        else if (selectedCountry === 'DE' || selectedCountry === 'FR') shippingCost = 18.50;
-        else shippingCost = 45.00; 
+        if (selectedCountry === 'JM') {
+          // FIXED: If user selects Jamaica, use our calculated dynamic box/delivery shipping fee!
+          // If no box is selected yet, fall back to a baseline minimum calculation (£15.00)
+          finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
+        } else if (selectedCountry === 'GB') {
+          finalShippingCost = 5.99;
+        } else if (selectedCountry === 'US' || selectedCountry === 'CA') {
+          finalShippingCost = 35.00;
+        } else if (selectedCountry === 'DE' || selectedCountry === 'FR') {
+          finalShippingCost = 18.50;
+        } else {
+          finalShippingCost = 45.00; 
+        }
       }
 
       // Safe DOM check for the shipping container label display
       if (checkoutShipping) {
-        checkoutShipping.textContent = '£' + shippingCost.toFixed(2);
+        checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
       }
 
       const concierge = 25;
       const packaging = 20;
-      const grandTotal = total + concierge + packaging + shippingCost;
+      const grandTotal = total + concierge + packaging + finalShippingCost;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
   }
+  
   // =========================================================================
   // 8. RECENTLY VIEWED
   // =========================================================================
@@ -1920,13 +2042,8 @@ function updateCartUI() {
     }
 
     showToast("Redirecting to secure Stripe Checkout...");
-
-    // 1. Go to your Stripe Dashboard -> Payments -> Payment Links
-    // 2. Create a generic link for your shop, copy the URL (e.g., https://buy.stripe.com/abc123xyz)
-    // 3. Paste your real link address inside the quotes below:
     const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
 
-    // 4. Safely open your Stripe checkout page in a fresh browser tab
     setTimeout(() => {
       window.open(stripePaymentLink, '_blank');
     }, 1000);
