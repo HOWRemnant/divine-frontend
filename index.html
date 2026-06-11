@@ -1782,6 +1782,15 @@ function addToCartName(name, price, imagePath) {
 }
 
 function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
+  // RULE FIX: If user is on the UK-to-JA page, make the Step 2 selector layout blocks non-responsive
+  const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
+  if (activeShopPage === 'uk-to-ja') {
+    if (typeof showToast === 'function') {
+      showToast("Please make your selection directly inside the Checkout Options panel.");
+    }
+    return; // Completely block actions from adding a physical copy to the array layout here
+  }
+
   globalShippingCost = parseFloat(calculatedShipping);
   cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
   addToCartName(boxTypeName, boxCost, boxImagePath);
@@ -1815,7 +1824,6 @@ function handleBoxChange() {
 }
 
 function updateCartUI() {
-  // 1. Establish absolute safe references for elements to prevent Null Reference Crashes
   const list = document.getElementById('cart-items');
   const totalEl = document.getElementById('cart-total');
   const subtotalEl = document.getElementById('cart-subtotal');
@@ -1828,7 +1836,6 @@ function updateCartUI() {
   const checkoutTotal = document.getElementById('checkout-total');
   const validationErrorEl = document.getElementById('checkout-validation-error');
 
-  // Safety fallback check for global state flags
   const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
 
   let total = 0;
@@ -1917,10 +1924,6 @@ function updateCartUI() {
   } else {
     if (activeShopPage === 'uk-to-ja') {
       finalShippingCost = currentGlobalShipping > 0 ? currentGlobalShipping : 35.00;
-      if (!hasBoxOrBarrel && typeof cart !== 'undefined' && cart.length > 0 && validationErrorEl) {
-        validationErrorEl.style.display = 'block';
-        validationErrorEl.innerHTML = '📦 Container Needed: Customers utilizing our UK-to-JA shipping options must choose a box container layout size from Step 2.';
-      }
     } else {
       finalShippingCost = 28.50; 
     }
@@ -1935,7 +1938,6 @@ function updateCartUI() {
   const note = document.getElementById('container-delivery-note');
   
   if (wrapper && note) {
-    // Structural Fallback if array definitions are outside this file scope
     let ratesToUse = (typeof internationalRates !== 'undefined') ? internationalRates : [];
     
     if (selectedCountry === 'JM' || activeShopPage === 'jamaica') {
@@ -1947,9 +1949,10 @@ function updateCartUI() {
         if (typeof lastSelectedBoxId !== 'undefined' && lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'wharf_small';
     }
 
-    // Filter out Wharf Options safely
+    // JAMAICA-WORLD WHARF REMOVAL FILTER
     const filteredRates = ratesToUse.filter(opt => {
       if (!opt || !opt.label) return false;
+      // Completely strips out 'Wharf Collection' if browsing the local Jamaica section layout
       if (activeShopPage === 'jamaica' && opt.label.toLowerCase().includes('wharf')) {
         return false; 
       }
@@ -1976,6 +1979,7 @@ function updateCartUI() {
     }).join('');
   }
 
+  // Capture current container selection cost securely
   const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
   const containerCost = selectedBoxElement ? parseFloat(selectedBoxElement.getAttribute('data-price')) : 0.00;
 
@@ -1984,6 +1988,7 @@ function updateCartUI() {
   if (packagingEl) packagingEl.textContent = '£' + containerCost.toFixed(2);
 
   if (checkoutTotal) {
+    // Structural Fix: Ignore array duplicates to calculate accurate grand totals natively
     const baseCartTotal = hasBoxOrBarrel ? (total - containerCost) : total;
     const grandTotal = Math.max(0, baseCartTotal) + concierge + finalShippingCost + containerCost;
     checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
@@ -2003,7 +2008,6 @@ function payNow() {
 
   const countrySelect = document.getElementById('checkout-country');
   const selectedCountry = countrySelect ? countrySelect.value : 'US';
-  const hasBox = cart.some(item => item.name && (item.name.includes("Box (") || item.name.includes("Barrel (")));
   const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
   
   if (selectedCountry === 'JM' && activeShopPage === 'jamaica') {
@@ -2016,9 +2020,10 @@ function payNow() {
     return;
   }
 
-  if (activeShopPage === 'uk-to-ja' && !hasBox) {
-    alert("Please choose an overseas container box specification layout before continuing your checkout order!");
-    if (typeof showPage === 'function') showPage('shop');
+  // Enforce container check securely using selection status instead of dynamic items array checks
+  const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
+  if (activeShopPage === 'uk-to-ja' && !selectedBoxElement) {
+    alert("Please choose an overseas container box specification layout from the options before continuing your checkout order!");
     return;
   }
 
