@@ -966,9 +966,9 @@
           Authentic Jamaican goods, shipped to your door worldwide.<br>
           UK residents — we ship to Jamaica too.
         </div>
-        <div class="hero-btns">
-          <button class="btn-green" onclick="showPage('shop')">🇯🇲 Shop Jamaica to World</button>
-          <button class="btn-gold" onclick="showPage('uk')">🇬🇧 UK to Jamaica</button>
+     <div class="hero-btns">
+          <button class="btn-green" onclick="currentShopPage = 'jamaica'; showPage('shop')">🇯🇲 Shop Jamaica to World</button>
+          <button class="btn-gold" onclick="currentShopPage = 'uk-to-ja'; showPage('shop')">🇬🇧 UK to Jamaica</button>
         </div>
       </div>
       <div class="hero-image">
@@ -1794,7 +1794,11 @@
     updateCartUI();
   }
 
-function updateCartUI() {
+// NEW GLOBAL VARIABLE: Track which shop mode the user is actively viewing
+  // Make sure your menu buttons set this! (e.g., clicking "JM Shop" sets currentShopPage = 'jamaica')
+  let currentShopPage = 'uk-to-ja'; 
+
+  function updateCartUI() {
     const list = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
     const subtotalEl = document.getElementById('cart-subtotal');
@@ -1805,30 +1809,32 @@ function updateCartUI() {
     const checkoutSubtotal = document.getElementById('checkout-subtotal');
     const checkoutShipping = document.getElementById('checkout-shipping');
     const checkoutTotal = document.getElementById('checkout-total');
+    const validationErrorEl = document.getElementById('checkout-validation-error');
 
     let total = 0;
     let totalItemsCount = 0;
     let groceryItemsTotal = 0;
-    let hasDoorToDoor = false;
+    
+    let hasBoxOrBarrel = false;
+    let isDoorToDoor = false;
 
-    // Build values loop cleanly
+    // Evaluate basket content loops
     cart.forEach((item) => {
       const qty = item.quantity || 1;
       const itemTotal = item.price * qty;
       total += itemTotal;
       totalItemsCount += qty;
 
-      // Track if cargo type dictates unique notification properties
       if (item.name.includes("Box (") || item.name.includes("Barrel (")) {
+        hasBoxOrBarrel = true;
         if (item.name.toLowerCase().includes("door")) {
-          hasDoorToDoor = true;
+          isDoorToDoor = true;
         }
       } else {
         groceryItemsTotal += itemTotal;
       }
     });
 
-    // Updaters safely guarded with Optional Chaining (?.) to block freeze crashes
     if (countEl) countEl.textContent = totalItemsCount.toString();
     if (totalEl) totalEl.textContent = total.toFixed(2);
     if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
@@ -1859,7 +1865,6 @@ function updateCartUI() {
       }).join('');
     }
 
-    // Process Checkout components safely
     if (checkoutItems) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
@@ -1869,32 +1874,55 @@ function updateCartUI() {
       `).join('');
     }
 
-    // Subtotal accurately tracks the complete basket contents row items combined
     if (checkoutSubtotal) checkoutSubtotal.textContent = '£' + total.toFixed(2);
 
+    // DYNAMIC REGIONAL SHIPPING RULES
     const countrySelect = document.getElementById('checkout-country');
-    const selectedCountry = countrySelect ? countrySelect.value : 'GB';
+    const selectedCountry = countrySelect ? countrySelect.value : 'US';
     
     let finalShippingCost = 0;
-    if (cart.length > 0) {
-      if (selectedCountry === 'JM') {
-        finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
-      } else if (selectedCountry === 'GB') {
-        finalShippingCost = 5.99;
-      } else if (selectedCountry === 'US' || selectedCountry === 'CA') {
-        finalShippingCost = 35.00;
-      } else if (selectedCountry === 'DE' || selectedCountry === 'FR') {
-        finalShippingCost = 18.50;
+    
+    // Clear old layout error messages
+    if (validationErrorEl) {
+      validationErrorEl.style.display = 'none';
+      validationErrorEl.innerHTML = '';
+    }
+
+    // RULE 1: If user is in Jamaica, block them ONLY if they are shopping the local Jamaica Shop page
+    if (selectedCountry === 'JM') {
+      if (currentShopPage === 'jamaica') {
+        if (validationErrorEl) {
+          validationErrorEl.style.display = 'block';
+          validationErrorEl.innerHTML = '⚠️ Access Denied: Local residents living in Jamaica cannot buy local goods from the "JM Shop" page. Please head over to our "UK to JA" page to shop for imported items instead!';
+        }
+      }
+      // If they are on the UK to JA page, shipping costs track the global container assignments
+      finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
+
+    } else if (selectedCountry === 'GB') {
+      // Local UK shipping rule
+      finalShippingCost = 5.99;
+
+    } else {
+      // US, CA, DE, FR, ROW (World Customers)
+      if (currentShopPage === 'uk-to-ja') {
+        // If they are on the UK to JA page, they MUST choose a cargo container box size
+        finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 35.00;
+        
+        if (!hasBoxOrBarrel && cart.length > 0 && validationErrorEl) {
+          validationErrorEl.style.display = 'block';
+          validationErrorEl.innerHTML = '📦 Container Needed: World customers utilizing our UK-to-JA shipping options must choose a box container layout size from Step 2.';
+        }
       } else {
-        finalShippingCost = 45.00; 
+        // If World customers are shopping the Jamaica Shop (exporting items out of JM to their homes abroad)
+        // Standard international courier express weights estimate
+        finalShippingCost = 28.50; 
       }
     }
 
     if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
 
     const concierge = 25;
-    
-    // Set this line detail strictly to 0.00 since the baseline container price is already included in the item subtotal above!
     const packagingEl = document.getElementById('summary-packaging-cost');
     if (packagingEl) packagingEl.textContent = '£0.00';
 
@@ -1903,10 +1931,42 @@ function updateCartUI() {
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
     }
 
+    // Display customs processing warning for incoming shipments destined to Jamaica
     const disclaimerEl = document.getElementById('customs-disclaimer');
     if (disclaimerEl) {
-      disclaimerEl.style.display = (selectedCountry === 'JM' && hasDoorToDoor) ? 'block' : 'none';
+      disclaimerEl.style.display = (selectedCountry === 'JM' || currentShopPage === 'uk-to-ja') ? 'block' : 'none';
     }
+  }
+
+  // GATEWAY ORDER SUBMISSION ENFORCER
+  function payNow() {
+    if (cart.length === 0) {
+      showToast("Your basket is empty.");
+      return;
+    }
+
+    const countrySelect = document.getElementById('checkout-country');
+    const selectedCountry = countrySelect ? countrySelect.value : 'US';
+    
+    // Enforce Rule: Stop local buyers from using the local JM grocery shop page
+    if (selectedCountry === 'JM' && currentShopPage === 'jamaica') {
+      alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page.");
+      return;
+    }
+
+    // Enforce Rule: World customers ordering from UK-to-JA require a container item
+    if (selectedCountry !== 'GB' && currentShopPage === 'uk-to-ja') {
+      const hasBox = cart.some(item => item.name.includes("Box (") || item.name.includes("Barrel ("));
+      if (!hasBox) {
+        alert("Please choose an overseas container box specification layout before continuing your checkout order!");
+        showPage('shop');
+        return;
+      }
+    }
+
+    showToast("Redirecting to secure Stripe Checkout...");
+    const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
+    setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
   }
   
   // =========================================================================
