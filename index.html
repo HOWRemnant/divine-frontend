@@ -1114,7 +1114,10 @@
     </div>
   </div>
 
- <div id="page-checkout" class="page">
+// =========================================================================
+// CHECKOUT SUMMARY PANEL
+// =========================================================================
+<div id="page-checkout" class="page">
     <div class="checkout-container">
       <div class="checkout-form">
         <h3>Shipping Address</h3>
@@ -1159,34 +1162,43 @@
         <hr style="border:0; border-top:1px solid var(--color-border-tertiary); margin:15px 0;">
         
         <div class="cart-row">
-          <span>Subtotal</span>
+          <span>Groceries Subtotal</span>
           <span id="checkout-subtotal">£0.00</span>
         </div>
         <div class="cart-row">
-          <span>Concierge Fee</span>
+          <span>Concierge Sourcing</span>
           <span>£25.00</span>
         </div>
         <div class="cart-row">
-          <span>Secure Packaging</span>
-          <span>£40.00</span>
+          <span>Selected Container Cost</span>
+          <span id="summary-packaging-cost">£0.00</span>
         </div>
         <div class="cart-row">
-          <span>Shipping Est.</span>
-          <span id="checkout-shipping">£0.00</span>
+          <span>Shipping Freight Rate</span>
+          <span id="checkout-shipping" style="color: #2e7d32; font-weight: bold;">£0.00</span>
         </div>
         
         <hr style="border:0; border-top:1px solid var(--color-border-tertiary); margin:15px 0;">
         <div class="cart-row" style="font-size:1.2rem; font-weight:bold;">
-          <span>Total</span>
-          <span id="checkout-total">£0.00</span>
+          <span>Total Due Now</span>
+          <span id="checkout-total" style="color: #1b5e20;">£0.00</span>
         </div>
-        <button class="btn-green" style="width:100%; margin-top:20px; padding:12px; font-size:1rem;" onclick="payNow()">
+
+        <div id="customs-disclaimer" style="display: none; margin-top: 20px; padding: 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 13px; color: #856404; line-height: 1.4; text-align: left;">
+          <strong>🚚 Door-to-Door Delivery Notice:</strong><br>
+          Please note that your upfront payment covers freight logistics to Jamaica. Once your container arrives, our local shipment company handles port processing. You will be directly contacted to settle the official <strong>customs clearance fees</strong>. Once verified, a secure date and time window will be finalized for home delivery drop-off.
+        </div>
+
+        <button class="btn-green" style="width:100%; margin-top:20px; padding:12px; font-size:1rem; font-weight: bold;" onclick="payNow()">
           Pay Securely via Stripe
         </button>
       </div>
     </div>
   </div>
 
+// =========================================================================
+// 🇬🇧 UK to JA Shopping Page
+// =========================================================================
 <div id="page-uk" class="page">
     <div class="uk-banner">
       🇬🇧 UK → Jamaica — We source UK products and ship them home to your family
@@ -1446,7 +1458,7 @@
     </div>
   </div>
 
-  <div id="page-cart" class="page">
+<div id="page-cart" class="page">
     <div class="section">
       <h2>Your Basket</h2>
       <div class="two-col">
@@ -1462,13 +1474,14 @@
 
         <div class="cart-summary">
           <p><strong>Subtotal:</strong> £<span id="cart-subtotal">0.00</span></p>
-          <p><strong>Shipping:</strong> Calculated at checkout</p>
-          <p><strong>Total:</strong> £<span id="cart-total">0.00</span></p>
+          <p style="font-size: 13px; color: #666; font-style: italic;">Container costs, handling, and shipping structures will apply on the next page based on delivery address.</p>
           <button class="btn-green" style="margin-top:20px;" onclick="showPage('checkout')">
             Proceed to Checkout &rarr;
           </button>
         </div>
       </div>
+    </div>
+  </div>
 
       <div id="recently-viewed-section" style="margin-top:40px; display:none;">
         <h3>Recently Viewed</h3>
@@ -1724,7 +1737,7 @@
   }
 
   // =========================================================================
-  // 7. UNIFIED QUANTITY CART SYSTEM (UPDATED TO HANDLE PASSED IMAGES)
+  // 7. UNIFIED QUANTITY CART SYSTEM (DOUBLES AS DETAILED PRICING ENGINE)
   // =========================================================================
   function addToCart(id) {
     const product = products.find(p => p.id === id);
@@ -1742,10 +1755,9 @@
     addToRecentlyViewed(product);
   }
 
-  // FIXED: Accepts a custom image path parameter so your basket doesn't break
+  // FIXED: Accepts custom parameters cleanly to safely push images and structures
   function addToCartName(name, price, imagePath) {
     const existingItem = cart.find(item => item.name === name);
-    // Use the image path if provided, fallback to the default company logo
     const finalImg = imagePath ? imagePath : 'images/logo1.PNG';
 
     if (existingItem) {
@@ -1758,22 +1770,20 @@
     showToast("Added to basket");
   }
 
-  // NEW FUNCTION: Handles Box + Dynamic Shipping Method Calculation
+  // HANDLES BOX CONFIGURATIONS AND PRICING CALCULATIONS DYNAMICALLY
   function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
-    // 1. Assign the real dynamic shipping rate based on button pressed
     globalShippingCost = parseFloat(calculatedShipping);
     
-    // 2. Clear out any older container box options already in the cart so they don't buy two boxes by accident
+    // Wipe matching duplicates so they never get billed for two boxes simultaneously
     cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
 
-    // 3. Add the selected container to the basket
+    // Pipe directly into initialization sequence
     addToCartName(boxTypeName, boxCost, boxImagePath);
   }
 
   function removeFromCart(index) {
     if (index < 0 || index >= cart.length) return;
     
-    // Reset global shipping if they remove the cargo container item entirely
     if (cart[index].name.includes("Box (") || cart[index].name.includes("Barrel (")) {
       globalShippingCost = 0.00;
     }
@@ -1808,6 +1818,11 @@
     list.innerHTML = '';
     let total = 0;
     let totalItemsCount = 0;
+    
+    // Keep track of any container base box price inside the basket array
+    let containerBaseCost = 0;
+    let groceryItemsTotal = 0;
+    let hasDoorToDoor = false;
 
     if (cart.length === 0) {
       if (emptyEl) emptyEl.style.display = 'block';
@@ -1820,6 +1835,16 @@
       const itemTotal = item.price * qty;
       total += itemTotal;
       totalItemsCount += qty;
+
+      // Extract details if it's our chosen container type
+      if (item.name.includes("Box (") || item.name.includes("Barrel (")) {
+        containerBaseCost += itemTotal;
+        if (item.name.toLowerCase().includes("door")) {
+          hasDoorToDoor = true;
+        }
+      } else {
+        groceryItemsTotal += itemTotal;
+      }
 
       const li = document.createElement('li');
       li.className = 'cart-item';
@@ -1853,7 +1878,7 @@
       });
     });
 
-    // Handle Checkout Panel Aggregations Safely
+    // Handle Checkout Panel Calculations and Layout Structure
     if (checkoutItems && checkoutSubtotal && checkoutTotal) {
       checkoutItems.innerHTML = cart.map(item => `
         <div class="cart-row">
@@ -1862,17 +1887,17 @@
         </div>
       `).join('');
 
-      checkoutSubtotal.textContent = '£' + total.toFixed(2);
+      // Items Subtotal represents only groceries/products loaded
+      checkoutSubtotal.textContent = '£' + groceryItemsTotal.toFixed(2);
 
-      // Determine Base Shipping Structures
+      // Determine active shipping calculations matching customer locations
       const countrySelect = document.getElementById('checkout-country');
       const selectedCountry = countrySelect ? countrySelect.value : 'GB';
       
       let finalShippingCost = 0;
       if (cart.length > 0) {
         if (selectedCountry === 'JM') {
-          // FIXED: If user selects Jamaica, use our calculated dynamic box/delivery shipping fee!
-          // If no box is selected yet, fall back to a baseline minimum calculation (£15.00)
+          // Fall back to baseline estimate minimum if no specific selection container exists yet
           finalShippingCost = globalShippingCost > 0 ? globalShippingCost : 15.00;
         } else if (selectedCountry === 'GB') {
           finalShippingCost = 5.99;
@@ -1885,15 +1910,34 @@
         }
       }
 
-      // Safe DOM check for the shipping container label display
       if (checkoutShipping) {
         checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
       }
 
+      // Explicit, separate line metrics configuration
       const concierge = 25;
-      const packaging = 20;
-      const grandTotal = total + concierge + packaging + finalShippingCost;
+      
+      // Override the standard placeholder value with the true container size value
+      const packaging = containerBaseCost > 0 ? containerBaseCost : 0;
+      
+      // Dynamic rendering safely updates targeted labels inside checkout panels
+      const packagingEl = document.getElementById('summary-packaging-cost');
+      if (packagingEl) {
+         packagingEl.textContent = '£' + packaging.toFixed(2);
+      }
+
+      const grandTotal = groceryItemsTotal + concierge + packaging + finalShippingCost;
       checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
+
+      // AUTOMATED CHECKSUM DISCLAIMER: Reveal warnings if Door-to-Door parameters are active
+      const disclaimerEl = document.getElementById('customs-disclaimer');
+      if (disclaimerEl) {
+        if (selectedCountry === 'JM' && hasDoorToDoor) {
+          disclaimerEl.style.display = 'block';
+        } else {
+          disclaimerEl.style.display = 'none';
+        }
+      }
     }
   }
   
