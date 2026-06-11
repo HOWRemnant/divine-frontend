@@ -1747,290 +1747,291 @@
     renderProducts(filtered);
   }
 
-// =========================================================================
-// 7. SECURED QUANTITY CART CALCULATION SYSTEM
-// =========================================================================
-function addToCart(id) {
-  if (typeof products === 'undefined') return;
-  const product = products.find(p => p.id === id);
-  if (!product || product.out) return;
+  // =========================================================================
+  // 7. SECURED QUANTITY CART CALCULATION SYSTEM
+  // =========================================================================
+  function addToCart(id) {
+    if (typeof products === 'undefined') return;
+    const product = products.find(p => p.id === id);
+    if (!product || product.out) return;
 
-  const existingItem = cart.find(item => item.id === id);
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    cart.push({ ...product, quantity: 1 });
-  }
-
-  updateCartUI();
-  if (typeof showToast === 'function') showToast("Added to basket");
-  if (typeof addToRecentlyViewed === 'function') addToRecentlyViewed(product);
-}
-
-function addToCartName(name, price, imagePath) {
-  const existingItem = cart.find(item => item.name === name);
-  const finalImg = imagePath ? imagePath : 'images/logo1.PNG';
-
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    const customItem = { id: Date.now(), name: name, price: price, img: finalImg, quantity: 1 };
-    cart.push(customItem);
-  }
-  updateCartUI();
-  if (typeof showToast === 'function') showToast("Added to basket");
-}
-
-function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
-  // RULE FIX: If user is on the UK-to-JA page, make the Step 2 selector layout blocks non-responsive
-  const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
-  if (activeShopPage === 'uk-to-ja') {
-    if (typeof showToast === 'function') {
-      showToast("Please make your selection directly inside the Checkout Options panel.");
+    const existingItem = cart.find(item => item.id === id);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
     }
-    return; // Completely block actions from adding a physical copy to the array layout here
+
+    updateCartUI();
+    if (typeof showToast === 'function') showToast("Added to basket");
+    if (typeof addToRecentlyViewed === 'function') addToRecentlyViewed(product);
   }
 
-  globalShippingCost = parseFloat(calculatedShipping);
-  cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
-  addToCartName(boxTypeName, boxCost, boxImagePath);
-}
+  function addToCartName(name, price, imagePath) {
+    const existingItem = cart.find(item => item.name === name);
+    const finalImg = imagePath ? imagePath : 'images/logo1.PNG';
 
-function removeFromCart(index) {
-  if (index < 0 || index >= cart.length) return;
-  if (cart[index].name.includes("Box (") || cart[index].name.includes("Barrel (")) {
-    globalShippingCost = 0.00;
-  }
-  cart.splice(index, 1);
-  updateCartUI();
-}
-
-function updateQuantity(index, newQty) {
-  newQty = parseInt(newQty, 10);
-  if (isNaN(newQty) || newQty <= 0) {
-    removeFromCart(index);
-    return;
-  }
-  cart[index].quantity = newQty;
-  updateCartUI();
-}
-
-function handleBoxChange() {
-  const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
-  if (selectedBoxElement) {
-    lastSelectedBoxId = selectedBoxElement.value;
-  }
-  updateCartUI();
-}
-
-function updateCartUI() {
-  const list = document.getElementById('cart-items');
-  const totalEl = document.getElementById('cart-total');
-  const subtotalEl = document.getElementById('cart-subtotal');
-  const countEl = document.getElementById('cart-count');
-  const emptyEl = document.getElementById('cart-empty');
-  
-  const checkoutItems = document.getElementById('checkout-items');
-  const checkoutSubtotal = document.getElementById('checkout-subtotal');
-  const checkoutShipping = document.getElementById('checkout-shipping');
-  const checkoutTotal = document.getElementById('checkout-total');
-  const validationErrorEl = document.getElementById('checkout-validation-error');
-
-  const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
-
-  let total = 0;
-  let totalItemsCount = 0;
-  let hasBoxOrBarrel = false;
-
-  if (typeof cart !== 'undefined' && Array.isArray(cart)) {
-    cart.forEach((item) => {
-      const qty = item.quantity || 1;
-      const itemTotal = (item.price || 0) * qty;
-      total += itemTotal;
-      totalItemsCount += qty;
-
-      if (item.name && (item.name.includes("Box (") || item.name.includes("Barrel ("))) {
-        hasBoxOrBarrel = true;
-      }
-    });
-  }
-
-  if (countEl) countEl.textContent = totalItemsCount.toString();
-  if (totalEl) totalEl.textContent = total.toFixed(2);
-  if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
-
-  if (emptyEl && typeof cart !== 'undefined') {
-    emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
-  }
-
-  if (list && typeof cart !== 'undefined') {
-    list.innerHTML = cart.map((item, index) => {
-      const qty = item.quantity || 1;
-      const price = item.price || 0;
-      return `
-        <li class="cart-item">
-          <img src="${item.img || ''}" alt="${item.name || ''}">
-          <div class="cart-item-details">
-            <h4>${item.name || ''}</h4>
-            <p>£${price.toFixed(2)} each</p>
-            <div style="margin-top:8px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-              <button class="cat-btn" style="padding:2px 10px; margin:0; font-weight:bold;" onclick="updateQuantity(${index}, ${qty - 1})">-</button>
-              <input type="number" value="${qty}" min="1" style="width:45px; text-align:center; padding:4px; border:1px solid #ccc; border-radius:4px;" onchange="updateQuantity(${index}, this.value)">
-              <button class="cat-btn" style="padding:2px 10px; margin:0; font-weight:bold;" onclick="updateQuantity(${index}, ${qty + 1})">+</button>
-            </div>
-            <button class="remove-btn" onclick="removeFromCart(${index})">Remove entirely</button>
-          </div>
-          <div style="font-weight:bold; margin-left:auto;">£${(price * qty).toFixed(2)}</div>
-        </li>
-      `;
-    }).join('');
-  }
-
-  if (checkoutItems && typeof cart !== 'undefined') {
-    checkoutItems.innerHTML = cart.map(item => `
-      <div class="cart-row">
-        <span>${item.name || ''} (x${item.quantity || 1})</span>
-        <span>£${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
-      </div>
-    `).join('');
-  }
-
-  if (checkoutSubtotal) checkoutSubtotal.textContent = '£' + total.toFixed(2);
-
-  // DYNAMIC REGIONAL SHIPPING RULES
-  const countrySelect = document.getElementById('checkout-country');
-  const selectedCountry = countrySelect ? countrySelect.value : 'US';
-  let finalShippingCost = 0;
-  
-  if (validationErrorEl) {
-    validationErrorEl.style.display = 'none';
-    validationErrorEl.innerHTML = '';
-  }
-
-  const currentGlobalShipping = (typeof globalShippingCost !== 'undefined') ? globalShippingCost : 0;
-
-  if (selectedCountry === 'JM') {
-    if (activeShopPage === 'jamaica') {
-      if (validationErrorEl) {
-        validationErrorEl.style.display = 'block';
-        validationErrorEl.innerHTML = '⚠️ Access Denied: Local residents living in Jamaica cannot buy local goods from the "JM Shop" page. Please head over to our "UK to JA" page to shop for imported items instead!';
-      }
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      const customItem = { id: Date.now(), name: name, price: price, img: finalImg, quantity: 1 };
+      cart.push(customItem);
     }
-    finalShippingCost = currentGlobalShipping > 0 ? currentGlobalShipping : 15.00;
+    updateCartUI();
+    if (typeof showToast === 'function') showToast("Added to basket");
+  }
 
-  } else if (selectedCountry === 'GB') {
-    finalShippingCost = activeShopPage === 'uk-to-ja' ? (currentGlobalShipping > 0 ? currentGlobalShipping : 35.00) : 5.99;
-
-  } else {
+  function addCargoToCart(boxTypeName, boxCost, calculatedShipping, boxImagePath) {
+    // RULE FIX: If user is on the UK-to-JA page, make the Step 2 selector layout blocks non-responsive
+    const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
     if (activeShopPage === 'uk-to-ja') {
-      finalShippingCost = currentGlobalShipping > 0 ? currentGlobalShipping : 35.00;
-    } else {
-      finalShippingCost = 28.50; 
+      if (typeof showToast === 'function') {
+        showToast("Please make your selection directly inside the Checkout Options panel.");
+      }
+      return; // Completely block actions from adding a physical copy to the array layout here
     }
+
+    globalShippingCost = parseFloat(calculatedShipping);
+    cart = cart.filter(item => !item.name.includes("Box (") && !item.name.includes("Barrel ("));
+    addToCartName(boxTypeName, boxCost, boxImagePath);
   }
 
-  if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
+  function removeFromCart(index) {
+    if (index < 0 || index >= cart.length) return;
+    if (cart[index].name.includes("Box (") || cart[index].name.includes("Barrel (")) {
+      globalShippingCost = 0.00;
+    }
+    cart.splice(index, 1);
+    updateCartUI();
+  }
 
-  // ==========================================
-  // DYNAMIC CONTAINER INJECTION ENGINE
-  // ==========================================
-  const wrapper = document.getElementById('container-options-wrapper');
-  const note = document.getElementById('container-delivery-note');
-  
-  if (wrapper && note) {
-    let ratesToUse = (typeof internationalRates !== 'undefined') ? internationalRates : [];
+  function updateQuantity(index, newQty) {
+    newQty = parseInt(newQty, 10);
+    if (isNaN(newQty) || newQty <= 0) {
+      removeFromCart(index);
+      return;
+    }
+    cart[index].quantity = newQty;
+    updateCartUI();
+  }
+
+  function handleBoxChange() {
+    const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
+    if (selectedBoxElement) {
+      lastSelectedBoxId = selectedBoxElement.value;
+    }
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    const list = document.getElementById('cart-items');
+    const totalEl = document.getElementById('cart-total');
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const countEl = document.getElementById('cart-count');
+    const emptyEl = document.getElementById('cart-empty');
     
-    if (selectedCountry === 'JM' || activeShopPage === 'jamaica') {
-        ratesToUse = (typeof jamaicaRates !== 'undefined') ? jamaicaRates : [];
-        note.innerHTML = "Rates include secure warehouse packaging and <strong>Door-to-Door</strong> freight delivery to Jamaica.";
-        if (typeof lastSelectedBoxId !== 'undefined' && !lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'jm_small';
-    } else {
-        note.innerHTML = "Choose your container box size and preferred freight delivery pipeline.";
-        if (typeof lastSelectedBoxId !== 'undefined' && lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'wharf_small';
+    const checkoutItems = document.getElementById('checkout-items');
+    const checkoutSubtotal = document.getElementById('checkout-subtotal');
+    const checkoutShipping = document.getElementById('checkout-shipping');
+    const checkoutTotal = document.getElementById('checkout-total');
+    const validationErrorEl = document.getElementById('checkout-validation-error');
+
+    const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
+
+    let total = 0;
+    let totalItemsCount = 0;
+    let hasBoxOrBarrel = false;
+
+    if (typeof cart !== 'undefined' && Array.isArray(cart)) {
+      cart.forEach((item) => {
+        const qty = item.quantity || 1;
+        const itemTotal = (item.price || 0) * qty;
+        total += itemTotal;
+        totalItemsCount += qty;
+
+        if (item.name && (item.name.includes("Box (") || item.name.includes("Barrel ("))) {
+          hasBoxOrBarrel = true;
+        }
+      });
     }
 
-    // JAMAICA-WORLD WHARF REMOVAL FILTER
-    const filteredRates = ratesToUse.filter(opt => {
-      if (!opt || !opt.label) return false;
-      // Completely strips out 'Wharf Collection' if browsing the local Jamaica section layout
-      if (activeShopPage === 'jamaica' && opt.label.toLowerCase().includes('wharf')) {
-        return false; 
-      }
-      return true;
-    });
+    if (countEl) countEl.textContent = totalItemsCount.toString();
+    if (totalEl) totalEl.textContent = total.toFixed(2);
+    if (subtotalEl) subtotalEl.textContent = total.toFixed(2);
 
-    if (typeof lastSelectedBoxId !== 'undefined') {
-      const fallbackBox = filteredRates.length > 0 ? filteredRates[0].id : '';
-      const hasValidSelection = filteredRates.some(opt => opt.id === lastSelectedBoxId);
-      if (!hasValidSelection && fallbackBox) {
-        lastSelectedBoxId = fallbackBox;
-      }
+    if (emptyEl && typeof cart !== 'undefined') {
+      emptyEl.style.display = cart.length === 0 ? 'block' : 'none';
     }
 
-    wrapper.innerHTML = filteredRates.map(opt => {
-        const activeBoxId = (typeof lastSelectedBoxId !== 'undefined') ? lastSelectedBoxId : '';
-        const isChecked = (opt.id === activeBoxId) ? 'checked' : '';
+    if (list && typeof cart !== 'undefined') {
+      list.innerHTML = cart.map((item, index) => {
+        const qty = item.quantity || 1;
+        const price = item.price || 0;
         return `
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; padding: 4px 0;">
-            <input type="radio" name="shipping_box" value="${opt.id}" data-price="${(opt.price || 0).toFixed(2)}" ${isChecked} onchange="handleBoxChange()" style="transform: scale(1.1); accent-color: #2e7d32;">
-            <span><strong>${opt.label}</strong> — £${(opt.price || 0).toFixed(2)}</span>
-          </label>
+          <li class="cart-item">
+            <img src="${item.img || ''}" alt="${item.name || ''}">
+            <div class="cart-item-details">
+              <h4>${item.name || ''}</h4>
+              <p>£${price.toFixed(2)} each</p>
+              <div style="margin-top:8px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <button class="cat-btn" style="padding:2px 10px; margin:0; font-weight:bold;" onclick="updateQuantity(${index}, ${qty - 1})">-</button>
+                <input type="number" value="${qty}" min="1" style="width:45px; text-align:center; padding:4px; border:1px solid #ccc; border-radius:4px;" onchange="updateQuantity(${index}, this.value)">
+                <button class="cat-btn" style="padding:2px 10px; margin:0; font-weight:bold;" onclick="updateQuantity(${index}, ${qty + 1})">+</button>
+              </div>
+              <button class="remove-btn" onclick="removeFromCart(${index})">Remove entirely</button>
+            </div>
+            <div style="font-weight:bold; margin-left:auto;">£${(price * qty).toFixed(2)}</div>
+          </li>
         `;
-    }).join('');
+      }).join('');
+    }
+
+    if (checkoutItems && typeof cart !== 'undefined') {
+      checkoutItems.innerHTML = cart.map(item => `
+        <div class="cart-row">
+          <span>${item.name || ''} (x${item.quantity || 1})</span>
+          <span>£${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
+        </div>
+      `).join('');
+    }
+
+    if (checkoutSubtotal) checkoutSubtotal.textContent = '£' + total.toFixed(2);
+
+    // DYNAMIC REGIONAL SHIPPING RULES
+    const countrySelect = document.getElementById('checkout-country');
+    const selectedCountry = countrySelect ? countrySelect.value : 'US';
+    let finalShippingCost = 0;
+    
+    if (validationErrorEl) {
+      validationErrorEl.style.display = 'none';
+      validationErrorEl.innerHTML = '';
+    }
+
+    const currentGlobalShipping = (typeof globalShippingCost !== 'undefined') ? globalShippingCost : 0;
+
+    if (selectedCountry === 'JM') {
+      if (activeShopPage === 'jamaica') {
+        if (validationErrorEl) {
+          validationErrorEl.style.display = 'block';
+          validationErrorEl.innerHTML = '⚠️ Access Denied: Local residents living in Jamaica cannot buy local goods from the "JM Shop" page. Please head over to our "UK to JA" page to shop for imported items instead!';
+        }
+      }
+      finalShippingCost = currentGlobalShipping > 0 ? currentGlobalShipping : 15.00;
+
+    } else if (selectedCountry === 'GB') {
+      finalShippingCost = activeShopPage === 'uk-to-ja' ? (currentGlobalShipping > 0 ? currentGlobalShipping : 35.00) : 5.99;
+
+    } else {
+      if (activeShopPage === 'uk-to-ja') {
+        finalShippingCost = currentGlobalShipping > 0 ? currentGlobalShipping : 35.00;
+      } else {
+        finalShippingCost = 28.50; 
+      }
+    }
+
+    if (checkoutShipping) checkoutShipping.textContent = '£' + finalShippingCost.toFixed(2);
+
+    // ==========================================
+    // DYNAMIC CONTAINER INJECTION ENGINE
+    // ==========================================
+    const wrapper = document.getElementById('container-options-wrapper');
+    const note = document.getElementById('container-delivery-note');
+    
+    if (wrapper && note) {
+      let ratesToUse = (typeof internationalRates !== 'undefined') ? internationalRates : [];
+      
+      if (selectedCountry === 'JM' || activeShopPage === 'jamaica') {
+          ratesToUse = (typeof jamaicaRates !== 'undefined') ? jamaicaRates : [];
+          note.innerHTML = "Rates include secure warehouse packaging and <strong>Door-to-Door</strong> freight delivery to Jamaica.";
+          if (typeof lastSelectedBoxId !== 'undefined' && !lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'jm_small';
+      } else {
+          note.innerHTML = "Choose your container box size and preferred freight delivery pipeline.";
+          if (typeof lastSelectedBoxId !== 'undefined' && lastSelectedBoxId.startsWith('jm_')) lastSelectedBoxId = 'wharf_small';
+      }
+
+      // JAMAICA-WORLD WHARF REMOVAL FILTER
+      const filteredRates = ratesToUse.filter(opt => {
+        if (!opt || !opt.label) return false;
+        // Completely strips out 'Wharf Collection' if browsing the local Jamaica section layout
+        if (activeShopPage === 'jamaica' && opt.label.toLowerCase().includes('wharf')) {
+          return false; 
+        }
+        return true;
+      });
+
+      if (typeof lastSelectedBoxId !== 'undefined') {
+        const fallbackBox = filteredRates.length > 0 ? filteredRates[0].id : '';
+        const hasValidSelection = filteredRates.some(opt => opt.id === lastSelectedBoxId);
+        if (!hasValidSelection && fallbackBox) {
+          lastSelectedBoxId = fallbackBox;
+        }
+      }
+
+      wrapper.innerHTML = filteredRates.map(opt => {
+          const activeBoxId = (typeof lastSelectedBoxId !== 'undefined') ? lastSelectedBoxId : '';
+          const isChecked = (opt.id === activeBoxId) ? 'checked' : '';
+          return `
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; padding: 4px 0;">
+              <input type="radio" name="shipping_box" value="${opt.id}" data-price="${(opt.price || 0).toFixed(2)}" ${isChecked} onchange="handleBoxChange()" style="transform: scale(1.1); accent-color: #2e7d32;">
+              <span><strong>${opt.label}</strong> — £${(opt.price || 0).toFixed(2)}</span>
+            </label>
+          `;
+      }).join('');
+    }
+
+    // Capture current container selection cost securely
+    const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
+    const containerCost = selectedBoxElement ? parseFloat(selectedBoxElement.getAttribute('data-price')) : 0.00;
+
+    const concierge = 25;
+    const packagingEl = document.getElementById('summary-packaging-cost');
+    if (packagingEl) packagingEl.textContent = '£' + containerCost.toFixed(2);
+
+    if (checkoutTotal) {
+      // Structural Fix: Ignore array duplicates to calculate accurate grand totals natively
+      const baseCartTotal = hasBoxOrBarrel ? (total - containerCost) : total;
+      const grandTotal = Math.max(0, baseCartTotal) + concierge + finalShippingCost + containerCost;
+      checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
+    }
+
+    const disclaimerEl = document.getElementById('customs-disclaimer');
+    if (disclaimerEl) {
+      disclaimerEl.style.display = (selectedCountry === 'JM' || activeShopPage === 'uk-to-ja') ? 'block' : 'none';
+    }
   }
 
-  // Capture current container selection cost securely
-  const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
-  const containerCost = selectedBoxElement ? parseFloat(selectedBoxElement.getAttribute('data-price')) : 0.00;
+  function payNow() {
+    if (typeof cart === 'undefined' || cart.length === 0) {
+      if (typeof showToast === 'function') showToast("Your basket is empty.");
+      return;
+    }
 
-  const concierge = 25;
-  const packagingEl = document.getElementById('summary-packaging-cost');
-  if (packagingEl) packagingEl.textContent = '£' + containerCost.toFixed(2);
+    const countrySelect = document.getElementById('checkout-country');
+    const selectedCountry = countrySelect ? countrySelect.value : 'US';
+    const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
+    
+    if (selectedCountry === 'JM' && activeShopPage === 'jamaica') {
+      alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page to order imported goods!");
+      return;
+    }
 
-  if (checkoutTotal) {
-    // Structural Fix: Ignore array duplicates to calculate accurate grand totals natively
-    const baseCartTotal = hasBoxOrBarrel ? (total - containerCost) : total;
-    const grandTotal = Math.max(0, baseCartTotal) + concierge + finalShippingCost + containerCost;
-    checkoutTotal.textContent = '£' + grandTotal.toFixed(2);
+    if (selectedCountry === 'GB' && activeShopPage === 'uk-to-ja') {
+      alert("Error: Residents in the United Kingdom cannot order from the UK to Jamaica shop page for domestic delivery. This service is strictly for shipping goods into Jamaica!");
+      return;
+    }
+
+    // Enforce container check securely using selection status instead of dynamic items array checks
+    const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
+    if (activeShopPage === 'uk-to-ja' && !selectedBoxElement) {
+      alert("Please choose an overseas container box specification layout from the options before continuing your checkout order!");
+      return;
+    }
+
+    if (typeof showToast === 'function') showToast("Redirecting to secure Stripe Checkout...");
+    const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
+    setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
   }
 
-  const disclaimerEl = document.getElementById('customs-disclaimer');
-  if (disclaimerEl) {
-    disclaimerEl.style.display = (selectedCountry === 'JM' || activeShopPage === 'uk-to-ja') ? 'block' : 'none';
-  }
-}
-
-function payNow() {
-  if (typeof cart === 'undefined' || cart.length === 0) {
-    if (typeof showToast === 'function') showToast("Your basket is empty.");
-    return;
-  }
-
-  const countrySelect = document.getElementById('checkout-country');
-  const selectedCountry = countrySelect ? countrySelect.value : 'US';
-  const activeShopPage = (typeof currentShopPage !== 'undefined') ? currentShopPage : 'default';
-  
-  if (selectedCountry === 'JM' && activeShopPage === 'jamaica') {
-    alert("Error: Residents in Jamaica cannot order from the Jamaica Shop layout section. Please use the UK to Jamaica shop page to order imported goods!");
-    return;
-  }
-
-  if (selectedCountry === 'GB' && activeShopPage === 'uk-to-ja') {
-    alert("Error: Residents in the United Kingdom cannot order from the UK to Jamaica shop page for domestic delivery. This service is strictly for shipping goods into Jamaica!");
-    return;
-  }
-
-  // Enforce container check securely using selection status instead of dynamic items array checks
-  const selectedBoxElement = document.querySelector('input[name="shipping_box"]:checked');
-  if (activeShopPage === 'uk-to-ja' && !selectedBoxElement) {
-    alert("Please choose an overseas container box specification layout from the options before continuing your checkout order!");
-    return;
-  }
-
-  if (typeof showToast === 'function') showToast("Redirecting to secure Stripe Checkout...");
-  const stripePaymentLink = "https://buy.stripe.com/test_4gM00kfeL5dmh1h9C75Ne00";
-  setTimeout(() => { window.open(stripePaymentLink, '_blank'); }, 1000);
-}
   // =========================================================================
   // 8. RECENTLY VIEWED LOGIC
   // =========================================================================
@@ -2050,6 +2051,7 @@ function payNow() {
     } catch (e) { recentlyViewed = []; }
   }
 
+  // FIXED ORDER RENDERING: Automatically pushes Recently Viewed below login form fields
   function renderRecentlyViewed() {
     const section = document.getElementById('recently-viewed-section');
     const container = document.getElementById('recently-viewed');
@@ -2070,6 +2072,12 @@ function payNow() {
         </div>
       </div>
     `).join('');
+
+    // LAYOUT STRUCTURAL FIX: If inside the Sign-In/Account section container, safely move the section to the bottom
+    const parentPage = section.parentElement;
+    if (parentPage && parentPage.id === 'page-account') {
+      parentPage.appendChild(section);
+    }
   }
 
   // =========================================================================
